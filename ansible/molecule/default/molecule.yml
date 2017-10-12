@@ -1,0 +1,58 @@
+---
+dependency:
+  name: galaxy
+  options:
+    vvv: True
+    role-file: requirements.yml
+driver:
+  name: docker
+lint:
+  name: yamllint
+  # https://github.com/metacloud/molecule/blob/master/molecule/lint/yamllint.py
+  # https://yamllint.readthedocs.io/en/latest/configuration.html#custom-configuration-without-a-config-file
+  options:
+    config-data: "{extends: relaxed, rules: {line-length: {max: 200}}}"
+platforms:
+  - name: mysql
+    image: mysql
+    env:
+        MYSQL_USER: magento
+        MYSQL_PASSWORD: s3cr3t
+        MYSQL_DATABASE: magento
+        MYSQL_ROOT_PASSWORD: r00t_s3cr3t
+    command: mysqld
+  - name: redis
+    image: redis
+    command: redis-server
+  - name: instance
+    image: debian:jessie
+    published_ports: "80:80"
+    groups:
+     - tag_role_front
+     - tag_project_magento
+     - tag_engine_cycloid_io
+     - tag_env_test
+    links:
+     - mysql:mysql
+     - redis:redis
+
+provisioner:
+  name: ansible
+  env:
+    MOLECULE_DEBUG: "true"
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: ../../magento.yml
+  options:
+    vault-password-file: ../../.vault-password
+    extra-vars: "env=test"
+    #skip-tags: deploy
+    #vvv: "True"
+
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

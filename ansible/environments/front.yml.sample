@@ -1,0 +1,20 @@
+# In this file you could override any variables present in default_front.yaml file
+
+# Usually you might want to override those variables :
+# magento_backend_frontname: admin
+# magento_admin_firstname: admin
+# magento_admin_lastname: admin
+# magento_admin_email: root@localhost.local
+# magento_admin_user: admin
+
+# magento_admin_password: 4Bigs3cr3t
+
+# In case you want to use vault to encrypt this password use the following command to generate the ansible vault var :
+# echo -n "4Bigs3cr3t" | ansible-vault encrypt_string --stdin-name=magento_admin_password
+#>> magento_admin_password: !vault |
+#>>           $ANSIBLE_VAULT;1.1;AES256
+#>>           37363232383334316164366337366430316535636130376134323366313565356365363662653539
+#>>           3161303331303565643831383839626263653362636466660a316530613935393464366536383839
+#>>           30303836326138306339623431356234333239343435623333343333623938633761636132303662
+#>>           3135343861383531660a393934316237363961663865393939313966373838653339326565353263
+#>>           6238

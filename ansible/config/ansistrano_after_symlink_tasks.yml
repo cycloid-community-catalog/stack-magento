@@ -1,0 +1,59 @@
+---
+#
+# - name: symlink fix for magento2 issue
+#   shell: ln -s /home/ home
+#   args:
+#     chdir: /home/www/yves-salomon/yves-salomon/magento
+
+
+- name: magento setup:upgrade
+  shell: php bin/magento setup:upgrade
+  args:
+    chdir: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}"
+  become: yes
+  become_user: "{{ ansistrano_user }}"
+
+
+# - name: remove web dir contents
+#   file:
+#     path: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/{{ item }}"
+#     state: absent
+#   with_items:
+#     - var/page_cache/*
+#     - var/di/*
+#     - var/generation/*
+#     - var/cache/*
+#     - var/view_preprocessed/*
+#     - pub/static/*
+
+- name: magento static-content:deploy
+  shell: php bin/magento setup:static-content:deploy {{ item }}
+  args:
+    chdir: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}"
+  become: yes
+  become_user: "{{ ansistrano_user }}"
+  with_items: "{{magento_static_content_deploy}}"
+
+- name: magento cache:clean
+  shell: php bin/magento cache:clean
+  args:
+    chdir: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}"
+  become: yes
+  become_user: "{{ ansistrano_user }}"
+
+
+- name: "Setup Magento2 crons : Create maintenance cron"
+  cron: name="Magento maintenance cron"
+        user="{{ansistrano_user}}"
+        job="{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/bin/magento cron:run | grep -v 'Ran jobs by schedule' >> {{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/var/log/magento.cron.log"
+  when: magento2_enable_crons
+
+- name: "Setup Magento2 crons : Create update cron"
+  cron: name="Magento update cron"
+        user="{{ansistrano_user}}" job="{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/update/cron.php >> {{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/log/update.cron.log"
+  when: magento2_enable_crons
+
+- name: "Setup Magento2 crons : Create Magento setup cron"
+  cron: name="Magento setup cron"
+        user="{{ansistrano_user}}" job="{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/bin/magento setup:cron:run >> {{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/var/log/setup.cron.log"
+  when: magento2_enable_crons

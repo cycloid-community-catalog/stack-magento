@@ -1,0 +1,73 @@
+---
+
+#
+# Front
+#
+- hosts: tag_role_front:&tag_project_magento:&tag_engine_cycloid_io:&tag_env_{{ env }}
+  become: yes
+  serial: 50%
+
+  vars_files:
+    - "environments/default_front.yml"
+    - "environments/{{env}}-front.yml"
+  vars:
+    # See https://github.com/votum/ansible-role-magento2
+    magento_install_options: "{{ lookup('template', 'install_options.j2') }}"
+
+  roles:
+    - role: cycloid.customer-ssh
+      # create user directory
+      # install ssh key in it
+      # install deployment ssh key
+      home_directory: "/home/www/magento"
+      user: magento
+      tags: team-ssh
+
+    # - {role: cycloid.postfix, tags: postfix}
+    # require ses login/pass but install postfix
+    - {role: cycloid.php, tags: php}
+    - {role: jdauphant.nginx, tags: nginx}
+
+    # # Mount share EFS
+    # - role: cycloid.systemd
+    #   systemd_type: mount
+    #   systemd_mount_device: "...-efs-magento-eu-we1-preprod.magento.{{ env }}:/"
+    #   systemd_mount_mountpoint: /home/www/magento/magento/shared
+    #   systemd_mount_type: nfs
+    #   tags: efs
+    #
+    # - role: cycloid.systemd
+    #   systemd_type: dropin
+    #   systemd_dropin_service_name: "nginx"
+    #   systemd_dropin_name: magento-share
+    #   systemd_dropin_priority: "01"
+    #   systemd_dropin_content:
+    #     - "[Unit]"
+    #     - 'After=home-www-...-shared.mount'
+    #     - 'Requires=home-www-...-shared.mount'
+    #   tags: efs
+
+
+    - role: cycloid.deployment
+      tags:
+        - deploy
+
+    # - {role: dharrisio.aws-cloudwatch-logs, tags: logs}
+
+  tags:
+    - front
+#
+# # Force log policy retention on cloudwatch
+# - hosts: tag_role_front:&tag_project_magento:&tag_env_{{ env }}
+#   tasks:
+#     - name: Fix cloudwatch log retention (nginx)
+#       local_action: shell for i in $(aws logs describe-log-groups --region=eu-west-1 |  jq -r '.logGroups[].logGroupName | select(. | startswith("magento_{{ env }}_nginx"))' ); do aws logs put-retention-policy --log-group-name $i --retention-in-days 365 --region eu-west-1; done
+#       run_once: true
+#     - name: Fix cloudwatch log retention (others)
+#       local_action: shell for i in $(aws logs describe-log-groups --region=eu-west-1 | jq -r '.logGroups[].logGroupName | select(. | startswith("magento_{{ env }}"))' | grep -v nginx); do aws logs put-retention-policy --log-group-name $i --retention-in-days 30 --region eu-west-1; done
+#       run_once: true
+#   tags:
+#     - logs
+#     - cloudwatch
+#     - notforbuild
+#     # notforbuild is skipped for packer build ami

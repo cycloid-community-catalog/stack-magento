@@ -1,0 +1,48 @@
+---
+# - src: git@github.com:cycloidio/ansible-base
+#   version: master
+#   name: cycloid.base
+#   scm: git
+
+# - src: git@github.com:cycloidio/ansible-cron
+#   version: master
+#   name: cycloid.cron
+#   scm: git
+
+# - src: git@github.com:cycloidio/ansible-postfix
+#   version: master
+#   name: cycloid.postfix
+#   scm: git
+
+- src: git@github.com:cycloidio/ansible-php
+  version: master
+  name: cycloid.php
+  scm: git
+
+- src: https://github.com/jdauphant/ansible-role-nginx.git
+  name: jdauphant.nginx
+  scm: git
+
+- src: git@github.com:cycloidio/ansible-deployment.git
+  version: master
+  name: cycloid.deployment
+  scm: git
+
+- src: git@github.com:cycloidio/ansible-customer-ssh
+  version: master
+  name: cycloid.customer-ssh
+  scm: git
+
+# - src: git@github.com:cycloidio/ansible-backup
+#   version: master
+#   name: cycloid.backup
+#   scm: git
+
+# - src: dharrisio.aws-cloudwatch-logs-agent
+#   version: master
+#   name: dharrisio.aws-cloudwatch-logs
+# 
+# - src: git@github.com:cycloidio/ansible-systemd
+#   version: master
+#   name: cycloid.systemd
+#   scm: git

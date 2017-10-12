@@ -1,0 +1,474 @@
+groups:
+
+- name: magento-((env))
+  jobs:
+  - magento-((env))-build
+  - full-deploy-front-magento-((env))
+  - app-deploy-front-magento-((env))
+  - terraform-plan-magento-((env))
+  - terraform-apply-magento-((env))
+  - magento-((env))-unittests
+  - magento-((env))-functional-tests
+
+resource_types:
+
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+
+resources:
+
+- name: terraform-magento-((env))
+  type: terraform
+  source:
+    storage:
+      bucket: ((terraform_storage_bucket_name))
+      bucket_path: ((terraform_storage_bucket_path))
+      region_name: ((aws_default_region))
+      access_key_id: ((terraform_storage_access_key))
+      secret_access_key: ((terraform_storage_secret_key))
+    vars:
+      access_key: ((aws_access_key))
+      secret_key: ((aws_secret_key))
+    env:
+      AWS_ACCESS_KEY_ID: ((aws_access_key))
+      AWS_DEFAULT_REGION: ((aws_default_region))
+      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+
+- name: magento-release
+  type: s3
+  source:
+    bucket: ((magento_deploy_bucket_name))
+    #regexp: magento/((env))/magento-((env)).tar.gz
+    versioned_file: ((magento_deploy_bucket_object_path))
+    private: true
+    region_name: ((magento_deploy_bucket_region))
+    access_key_id: ((magento_deploy_bucket_access_key))
+    secret_access_key: ((magento_deploy_bucket_secret_access_key))
+
+- name: catalog-magento-ansible
+  type: git
+  source:
+    uri: git@github.com:cycloidio/catalog-magento.git
+    branch: master
+    check_every: 2m
+    private_key: ((catalog_magento_git_private_key))
+    path: /ansible/
+
+- name: catalog-config-ansible
+  type: git
+  source:
+    uri: ((magento_config_git_repository))
+    branch: ((magento_config_git_branch))
+    check_every: 2m
+    private_key: ((magento_config_git_private_key))
+    path: /ansible/
+
+- name: catalog-magento-terraform
+  type: git
+  source:
+    uri: git@github.com:cycloidio/catalog-magento.git
+    branch: master
+    check_every: 2m
+    private_key: ((catalog_magento_git_private_key))
+    path: /terraform/
+
+- name: catalog-config-terraform
+  type: git
+  source:
+    uri: ((magento_config_git_repository))
+    branch: ((magento_config_git_branch))
+    check_every: 2m
+    private_key: ((magento_config_git_private_key))
+    path: /terraform/
+
+- name: magento-code
+  type: git
+  source:
+    uri: ((magento_git_repository))
+    branch: ((magento_git_branch))
+    check_every: 2m
+    private_key: ((magento_git_private_key))
+
+
+jobs:
+  - name: terraform-plan-magento-((env))
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        - get: catalog-magento-terraform
+          trigger: true
+        - get: catalog-config-terraform
+          trigger: true
+
+        - task: merge-catalog-and-config
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: cycloid/busybox
+                tag: latest
+            run:
+              path: /bin/sh
+              args:
+              - -xec
+              - |
+                cp -av catalog/terraform/. merged-catalog/
+                if [ -d "config/${CONFIG_PATH}" ]; then
+                  cp -av config/${CONFIG_PATH}/. merged-catalog/
+                fi
+                echo "############ extract tag for the image : <catalog_id>-<config_id>"
+                echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+            inputs:
+            - name: catalog-config-terraform
+              path: "config"
+            - name: catalog-magento-terraform
+              path: "catalog"
+            outputs:
+            - name: merged-catalog
+              path: "merged-catalog"
+          params:
+            CONFIG_PATH: terraform/((env))
+
+
+        - put: terraform-magento-((env))
+          params:
+            env_name: magento-((env))
+            plan_only: true
+            terraform_source: merged-catalog/
+
+  - name: terraform-apply-magento-((env))
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        # Get the PR on the project #
+        - get: catalog-magento-terraform
+          trigger: false
+          passed:
+            - terraform-plan-magento-((env))
+        - get: catalog-config-terraform
+          trigger: false
+          passed:
+            - terraform-plan-magento-((env))
+        - get: terraform-magento-((env))
+          trigger: false
+          passed:
+            - terraform-plan-magento-((env))
+
+        - task: merge-catalog-and-config
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: cycloid/busybox
+                tag: latest
+            run:
+              path: /bin/sh
+              args:
+              - -xec
+              - |
+                cp -av catalog/terraform/. merged-catalog/
+                if [ -d "config/${CONFIG_PATH}" ]; then
+                  cp -av config/${CONFIG_PATH}/. merged-catalog/
+                fi
+                echo "############ extract tag for the image : <catalog_id>-<config_id>"
+                echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+            inputs:
+            - name: catalog-config-terraform
+              path: "config"
+            - name: catalog-magento-terraform
+              path: "catalog"
+            outputs:
+            - name: merged-catalog
+              path: "merged-catalog"
+          params:
+            CONFIG_PATH: terraform/((env))
+
+
+        - put: terraform-magento-((env))
+          params:
+            env_name: magento-((env))
+            run_plan: true
+            terraform_source: merged-catalog/
+
+  - name: magento-((env))-build
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - get: magento-code
+        trigger: true
+
+      - task: build-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/composer
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+            - -xec
+            - |
+              DIR=${PWD}
+
+              echo "### Build release"
+              cd ${DIR}/code
+
+              composer install --optimize-autoloader --ignore-platform-reqs
+
+              php bin/magento module:enable --all
+
+              php bin/magento setup:di:compile -v
+
+              echo "# create the archive release"
+              cd ${DIR}
+              tar zcf ${PWD}/release/magento-release.tar.gz code
+          # params:
+          inputs:
+          - name: magento-code
+            path: code
+          outputs:
+          - name: release
+            path: "release"
+      - put: magento-release
+        params:
+          acl: private
+          file: release/magento-release.tar.gz
+
+  - name: magento-((env))-unittests
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - get: magento-release
+        trigger: true
+        passed: [magento-((env))-build]
+      - get: magento-code
+        passed: [magento-((env))-build]
+        trigger: false
+
+      - task: run
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/busybox
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+            - -xec
+            - |
+              DIR=${PWD}
+              echo "Dummy tests OK"
+
+  - name: full-deploy-front-magento-((env))
+    build_logs_to_retain: 10
+    plan:
+    - do:
+
+      - get: terraform-magento-((env))
+        trigger: true
+        passed:
+          - terraform-apply-magento-((env))
+
+      - get: catalog-magento-ansible
+        trigger: true
+      - get: catalog-config-ansible
+        trigger: true
+
+      - get: magento-release
+        trigger: false
+        passed: [magento-((env))-unittests]
+
+      - get: magento-code
+        passed: [magento-((env))-unittests]
+        trigger: false
+
+      - task: merge-catalog-and-config
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/busybox
+              tag: latest
+          run:
+            path: /bin/sh
+            args:
+            - -xec
+            - |
+              cp -av catalog/ansible/. merged-catalog/
+              if [ -d "config/${CONFIG_PATH}" ]; then
+                cp -av config/${CONFIG_PATH}/. merged-catalog/
+              fi
+              echo "############ extract tag for the image : <catalog_id>-<config_id>"
+              echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+          inputs:
+          - name: catalog-config-ansible
+            path: "config"
+          - name: catalog-magento-ansible
+            path: "catalog"
+          outputs:
+          - name: merged-catalog
+            path: "merged-catalog"
+        params:
+          CONFIG_PATH: ansible
+
+      - task: extract-terraform-outputs
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ruby
+              tag: latest
+          run:
+            path: /bin/sh
+            args:
+            - -xec
+            - |
+              cp -av merged-catalog/. ansible-playbook/
+              ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < terraform/metadata | tail -n +2 | tee -a ansible-playbook/group_vars/all
+          inputs:
+          - name: merged-catalog
+          - name: terraform-magento-((env))
+            path: "terraform"
+          outputs:
+          - name: ansible-playbook
+
+      - task: connect-bastion
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/busybox
+              tag: latest
+          run:
+            path: /bin/sh
+            args:
+            - -xec
+            - |
+              mkdir -p /root/.ssh
+              echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
+              chmod 600  /root/.ssh/id_rsa
+              echo ${ANSIBLE_VAULT_PASSWORD} > ansible-playbook/.vault-password
+              rsync -av --delete ansible-playbook/ ${BASTION_URL}:/tmp/cycloid_magento/
+
+              # FIXME should we keep those var as env ? or put them in ansible ? NOTE : those variables are required in the pipeline AND ansible. Duplicate info
+              ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento &&
+                                                                export ANSIBLE_FORCE_COLOR=true &&
+                                                                export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
+                                                                export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=${MAGENTO_DEPLOY_BUCKET_OBJECT_PATH} &&
+                                                                export MAGENTO_DEPLOY_BUCKET_REGION=${MAGENTO_DEPLOY_BUCKET_REGION} &&
+                                                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} &&
+                                                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} &&
+                                                                ansible-playbook --vault-password-file=.vault-password magento.yml -e env=${ENV} --diff"
+          inputs:
+          - name: ansible-playbook
+        params:
+          ENV: ((env))
+          BASTION_URL: ((bastion_url))
+          BASTION_PRIVATE_KEY_PAIR: ((bastion_private_key_pair))
+          ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
+          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
+          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
+          MAGENTO_DEPLOY_BUCKET_REGION: ((magento_deploy_bucket_region))
+          AWS_ACCESS_KEY_ID: ((magento_deploy_bucket_access_key))
+          AWS_SECRET_ACCESS_KEY: ((magento_deploy_bucket_secret_access_key))
+
+  - name: app-deploy-front-magento-((env))
+    build_logs_to_retain: 10
+    plan:
+    - do:
+
+      - get: catalog-magento-ansible
+        trigger: false
+        passed:
+          - full-deploy-front-magento-((env))
+
+      - get: catalog-config-ansible
+        trigger: false
+        passed:
+          - full-deploy-front-magento-((env))
+
+      - get: magento-release
+        trigger: true
+        passed: [magento-((env))-unittests]
+      - get: magento-code
+        trigger: false
+        passed: [magento-((env))-unittests]
+
+      - task: connect-bastion
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/busybox
+              tag: latest
+          run:
+            path: /bin/sh
+            args:
+            - -xec
+            - |
+              mkdir -p /root/.ssh
+              echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
+              chmod 600  /root/.ssh/id_rsa
+
+              ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento &&
+                                                                export ANSIBLE_FORCE_COLOR=true &&
+                                                                export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
+                                                                export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=${MAGENTO_DEPLOY_BUCKET_OBJECT_PATH} &&
+                                                                export MAGENTO_DEPLOY_BUCKET_REGION=${MAGENTO_DEPLOY_BUCKET_REGION} &&
+                                                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} &&
+                                                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} &&
+                                                                ansible-playbook --vault-password-file=.vault-password magento.yml -e env=${ENV} --diff --tags ${TAGS}"
+        params:
+          ENV: ((env))
+          BASTION_URL: ((bastion_url))
+          BASTION_PRIVATE_KEY_PAIR: ((bastion_private_key_pair))
+          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
+          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
+          MAGENTO_DEPLOY_BUCKET_REGION: ((magento_deploy_bucket_region))
+          AWS_ACCESS_KEY_ID: ((magento_deploy_bucket_access_key))
+          AWS_SECRET_ACCESS_KEY: ((magento_deploy_bucket_secret_access_key))
+          TAGS: "deploy"
+
+  - name: magento-((env))-functional-tests
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - get: magento-release
+        trigger: true
+        passed: [app-deploy-front-magento-((env))]
+      - get: magento-code
+        passed: [app-deploy-front-magento-((env))]
+        trigger: false
+
+
+      - task: run
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/busybox
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+            - -xec
+            - |
+              DIR=${PWD}
+              echo "Dummy functional tests OK"
