@@ -1,0 +1,18 @@
+# Configuration of the CI pipeline
+pipeline:
+  pipeline:
+    path: 'pipeline/magento.yml'
+  variables:
+    path: 'pipeline/variables.sample.yml'
+
+# Configuration of ansible for provisionning
+ansible:
+  magento:
+    path: 'ansible/environments/front.yml.sample'
+    destination: 'ansible/environments/($ environments $)-front.yml'
+
+# Configuration of terraform to setup the infrastructure    
+terraform:
+  magento:
+    path: 'terraform/magento.tf.sample'
+    destination: 'terraform/magento/($ environments $)/magento.tf'
