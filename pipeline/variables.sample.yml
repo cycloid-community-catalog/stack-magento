@@ -18,10 +18,6 @@ bastion_private_key_pair: |-
   -----BEGIN RSA PRIVATE KEY-----
   -----END RSA PRIVATE KEY-----
 
-catalog_magento_git_private_key: |-
-  -----BEGIN RSA PRIVATE KEY-----
-  -----END RSA PRIVATE KEY-----
-
 magento_git_repository: git@github.com:MyUser/code-magento.git
 magento_git_branch: master
 magento_git_private_key: |-

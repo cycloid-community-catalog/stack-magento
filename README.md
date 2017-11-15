@@ -1,5 +1,5 @@
-# catalog-magento
-Service catalog magento
+# Stack-magento
+Service catalog magento stack
 
 
 ## Test ansible role with molecule
@@ -27,5 +27,5 @@ molecule verify
 
 ```
 fly --target cycloid-products login --concourse-url $(vault read -field url secret/cycloid/concourse) -u cycloid -p $(vault read -field password secret/cycloid/concourse) -n cycloid-products
-fly -t cycloid-products set-pipeline -p catalog-magento -c magento.yml --load-vars-from=variables.yml --non-interactive
+fly -t cycloid-products set-pipeline -p stack-magento -c magento.yml --load-vars-from=variables.yml --non-interactive
 ```
