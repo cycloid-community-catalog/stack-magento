@@ -8,8 +8,6 @@ driver:
   name: docker
 lint:
   name: yamllint
-  # https://github.com/metacloud/molecule/blob/master/molecule/lint/yamllint.py
-  # https://yamllint.readthedocs.io/en/latest/configuration.html#custom-configuration-without-a-config-file
   options:
     config-data: "{extends: relaxed, rules: {line-length: {max: 200}}}"
 platforms:

@@ -1,10 +1,12 @@
 # Stack-magento
+
 Service catalog magento stack
 
+This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache.
 
 ## Test ansible role with molecule
 
-Require a bucket who contain a build of magento sources and AWS accesskey
+Requires a bucket which contains a build of magento sources and AWS accesskey
 
 ```
 export AWS_SECRET_ACCESS_KEY=$(vault read -field=secret_key secret/$CUSTOMER/aws)
@@ -14,7 +16,7 @@ export MAGENTO_DEPLOY_BUCKET_NAME=cycloid-deploy
 export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=/catalog-magento/ci/magento.tar.gz
 export MAGENTO_DEPLOY_BUCKET_REGION=eu-west-1
 
-# Share if needed your ssh key to an ssh agent (used by molecule to clone dependancies)
+# Share if needed your ssh key to an ssh agent (used by molecule to clone dependencies)
 eval $(ssh-agent )
 ssh-add ~/.ssh/id_rsa
 

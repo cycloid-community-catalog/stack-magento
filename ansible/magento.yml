@@ -16,9 +16,6 @@
 
   roles:
     - role: cycloid.customer-ssh
-      # create user directory
-      # install ssh key in it
-      # install deployment ssh key
       home_directory: "/home/www/magento"
       user: magento
       tags: team-ssh
@@ -52,22 +49,5 @@
       tags:
         - deploy
 
-    # - {role: dharrisio.aws-cloudwatch-logs, tags: logs}
-
   tags:
     - front
-#
-# # Force log policy retention on cloudwatch
-# - hosts: tag_role_front:&tag_project_magento:&tag_env_{{ env }}
-#   tasks:
-#     - name: Fix cloudwatch log retention (nginx)
-#       local_action: shell for i in $(aws logs describe-log-groups --region=eu-west-1 |  jq -r '.logGroups[].logGroupName | select(. | startswith("magento_{{ env }}_nginx"))' ); do aws logs put-retention-policy --log-group-name $i --retention-in-days 365 --region eu-west-1; done
-#       run_once: true
-#     - name: Fix cloudwatch log retention (others)
-#       local_action: shell for i in $(aws logs describe-log-groups --region=eu-west-1 | jq -r '.logGroups[].logGroupName | select(. | startswith("magento_{{ env }}"))' | grep -v nginx); do aws logs put-retention-policy --log-group-name $i --retention-in-days 30 --region eu-west-1; done
-#       run_once: true
-#   tags:
-#     - logs
-#     - cloudwatch
-#     - notforbuild
-#     # notforbuild is skipped for packer build ami

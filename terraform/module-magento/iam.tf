@@ -52,15 +52,3 @@
 #   roles      = ["${aws_iam_role.front.name}"]
 #   policy_arn = "${aws_iam_policy.ec2-tag-describe.arn}"
 # }
-#
-# # resource "aws_iam_policy_attachment" "front-logs" {
-# #   name       = "logs-front-${var.project}-${var.env}"
-# #   roles      = ["${aws_iam_role.front.name}"]
-# #   policy_arn = "${var.iam_policy_infra-logs}"
-# #
-# #   lifecycle {
-# #     ignore_changes = [
-# #       "roles",
-# #     ]
-# #   }
-# # }

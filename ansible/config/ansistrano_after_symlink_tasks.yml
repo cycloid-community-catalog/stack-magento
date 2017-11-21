@@ -1,10 +1,4 @@
 ---
-#
-# - name: symlink fix for magento2 issue
-#   shell: ln -s /home/ home
-#   args:
-#     chdir: /home/www/yves-salomon/yves-salomon/magento
-
 
 - name: magento setup:upgrade
   shell: php bin/magento setup:upgrade
@@ -12,19 +6,6 @@
     chdir: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}"
   become: yes
   become_user: "{{ ansistrano_user }}"
-
-
-# - name: remove web dir contents
-#   file:
-#     path: "{{ ansistrano_deploy_to }}/{{ ansistrano_app_name }}/{{ item }}"
-#     state: absent
-#   with_items:
-#     - var/page_cache/*
-#     - var/di/*
-#     - var/generation/*
-#     - var/cache/*
-#     - var/view_preprocessed/*
-#     - pub/static/*
 
 - name: magento static-content:deploy
   shell: php bin/magento setup:static-content:deploy {{ item }}

@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# This script is here because for now ansible (v2.4) only offer
+# a way to encrypt vault variable.
+
+# This script is expected to be use for debug purpose on ansible variable file
+# containing vault enctypted variables.
+# It will simply load the specified file, ask you the vault password
+# then print the file on stdout with all vault variables decrypted.
+
 import argparse
 import yaml
 from ansible.cli import CLI

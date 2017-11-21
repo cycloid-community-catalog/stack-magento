@@ -56,33 +56,43 @@ variable "project" {
 variable "rds_database" {
   default = "magento"
 }
+
 variable "rds_disk_size" {
   default = 10
 }
+
 variable "rds_multiaz" {
   default = true
 }
+
 variable "rds_password" {
   default = "ChangeMePls"
 }
+
 variable "rds_type" {
   default = "db.t2.small"
 }
+
 variable "rds_username" {
   default = "magento"
 }
+
 variable "rds_engine" {
   default = "mysql"
 }
+
 variable "rds_engine_version" {
   default = "5.7.16"
 }
+
 variable "rds_backup_retention" {
   default = 7
 }
+
 variable "rds_parameters" {
   default = ""
 }
+
 variable "rds_subnet" {
   default = ""
 }
@@ -91,33 +101,40 @@ variable "rds_storage_type" {
   default = "gp2"
 }
 
-# variable "iam_policy_infra-logs" {}
+###
 
-#
 # front
-#
+
+###
 
 variable "magento_ssl_cert" {}
 
 variable "front_disk_size" {
   default = 60
 }
+
 variable "front_disk_type" {
   default = "gp2"
 }
+
 variable "front_type" {
   default = "t2.small"
 }
+
 variable "front_ebs_optimized" {
   default = false
 }
+
 variable "front_count" {
   default = 1
 }
 
-#
+###
+
 # ElastiCache
-#
+
+###
+
 variable "elasticache_type" {
   default = "cache.t2.micro"
 }

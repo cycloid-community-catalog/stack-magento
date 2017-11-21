@@ -121,11 +121,11 @@ resource "aws_security_group" "elb-front" {
   }
 }
 
-#
+###
 
 # Create a loadbalancer for the fronts
 
-#
+###
 
 resource "aws_elb" "front" {
   name = "${var.project}-front-${var.env}"
@@ -169,9 +169,12 @@ resource "aws_elb" "front" {
   }
 }
 
-#
+###
+
 # Cloudwatch Alarms
-#
+
+###
+
 resource "aws_cloudwatch_metric_alarm" "recover-front" {
   alarm_actions       = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
   alarm_description   = "Recover the instance"
@@ -192,17 +195,3 @@ resource "aws_cloudwatch_metric_alarm" "recover-front" {
   threshold                 = "0"
 
 }
-
-# ELB Route 53
-#
-# resource "aws_route53_record" "elb-front" {
-#   zone_id = "${var.private_zone_id}"
-#   name    = "${var.project}-elb-front-${lookup(var.short_region, var.aws_region)}"
-#   type    = "A"
-#
-#   alias {
-#     name                   = "${aws_elb.front.dns_name}"
-#     zone_id                = "${aws_elb.front.zone_id}"
-#     evaluate_target_health = true
-#   }
-# }

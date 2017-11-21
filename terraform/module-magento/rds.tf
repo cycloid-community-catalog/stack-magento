@@ -60,21 +60,9 @@ resource "aws_db_instance" "magento" {
   }
 }
 
-
 resource "aws_db_subnet_group" "rds-subnet" {
   name        = "engine-cycloid.io_subnet-rds-${var.vpc_id}"
   count       = "${var.rds_subnet != "" ? 0 : 1}"
   description = "subnet-rds-${var.vpc_id}"
   subnet_ids  = ["${var.private_subnets_ids}"]
 }
-
-#
-# Route 53
-#
-# resource "aws_route53_record" "rds" {
-#   zone_id = "${var.private_zone_id}"
-#   name    = "${var.project}-rds-${lookup(var.short_region, var.aws_region)}"
-#   type    = "CNAME"
-#   ttl     = "3600"
-#   records = ["${aws_db_instance.magento.address}"]
-# }

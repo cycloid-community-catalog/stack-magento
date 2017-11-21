@@ -5,15 +5,6 @@ magento_admin_email: root@localhost.local
 magento_admin_user: admin
 magento_admin_password: 4Bigs3cr3t
 
-# echo -n "4Bigs3cr3t" | ansible-vault encrypt_string --stdin-name=magento_admin_password
-# magento_admin_password: !vault |
-#           $ANSIBLE_VAULT;1.1;AES256
-#           37363232383334316164366337366430316535636130376134323366313565356365363662653539
-#           3161303331303565643831383839626263653362636466660a316530613935393464366536383839
-#           30303836326138306339623431356234333239343435623333343333623938633761636132303662
-#           3135343861383531660a393934316237363961663865393939313966373838653339326565353263
-#           6238
-
 # FIXME The following variables are sent by the pipeline. They are some 'external' variables.
 # Should we use env var to differenciate them ?
 # For now output variables by terraform are in group_vars/all.
@@ -37,7 +28,7 @@ magento2_enable_crons: true
 
 # Given by the pipeline exported from terraform
 magento_base_url: "http://{{ elb_front_dns_name | default('localhost') }}"
-# magento_base_url_secure: "https://{{ elb_front_dns_name | default('localhost') }}"
+magento_base_url_secure: "https://{{ elb_front_dns_name | default('localhost') }}"
 magento_redis_host: "{{ cache_address | default('redis') }}"
 magento_db_host: "{{ rds_address | default('mysql') }}"
 magento_db_name: "{{ rds_database | default('magento') }}"
@@ -69,16 +60,16 @@ ansistrano_s3_archive_content: true
 # Required by customer-ssh to create user home
 
 customer: "{{ansistrano_user}}"
-# ansistrano_shared_paths:
-#   - pub/media
-#   - pub/sitemaps
-#   - var/backups
-#   - var/composer_home
-#   - var/import
-#   - var/importexport
-#   - var/import_history
-#   - var/session
-#   - var/tmp
+ansistrano_shared_paths:
+  - pub/media
+  - pub/sitemaps
+  - var/backups
+  - var/composer_home
+  - var/import
+  - var/importexport
+  - var/import_history
+  - var/session
+  - var/tmp
 
 # FIXME do we want to setup postfix ? Require SES login
 # Postfix unused for now
@@ -151,8 +142,8 @@ nginx_sites:
     - set $MAGE_ROOT /home/www/magento/magento/magento/
     - root $MAGE_ROOT/pub
     - set $MAGE_MODE production
-    - access_log /var/log/nginx/magento.magento.fr.access.log
-    - error_log /var/log/nginx/magento.magento.fr.error.log
+    - access_log /var/log/nginx/magento.access.log
+    - error_log /var/log/nginx/magento.error.log
     - set $ssl off
     - if ($http_x_custom_proto = "https") { set $ssl on; }
     - index index.php
@@ -301,44 +292,6 @@ nginx_sites:
     - location ^~ /app/ { deny all; }
     - location ^~ /lib/ { deny all; }
     - location ^~ /var/ { deny all; }
-
-# FIXME Do we want to confogure awslogs ? require role or accesskey
-#stream_name: "{{ ansible_hostname }}"
-#logs:
-#  - file: /var/log/syslog
-#    format: "%b %d %H:%M:%S"
-#    group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_syslog"
-#  - file: /var/log/auth.log
-#    format: "%b %d %H:%M:%S"
-#    group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_auth"
-#  - file: /root/.bash_history
-#    format: "%d/%m/%Y - %H:%M:%S"
-#    group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_history_root"
-#  - file: /home/*/.bash_history
-#    format: "%d/%m/%Y - %H:%M:%S"
-#    group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_history_users"
-#  - file: /var/log/apt/*log
-#    format: "%Y-%m-%d  %H:%M:%S"
-#    group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_apt"
-
-# #log format: http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AgentReference.html
-# extra_logs:
-#     # Nginx
-#   - file: /var/log/nginx/magento.magento.fr.access.log
-#     group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_nginx_access"
-#     format: "%d/%b/%Y:%H:%M:%S"
-#   - file: /var/log/nginx/magento.magento.fr.error.log
-#     group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_nginx_error"
-#     format: "%d/%b/%Y:%H:%M:%S"
-#     # PHP
-#   - file: /var/log/php7.0-fpm.log
-#     group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_php"
-#     format: "%d-%b-%Y %H:%M:%S"
-#     # Application magento
-#   - file: /home/www/magento/magento/magento/var/log/*.log
-#     group_name: "{{ ec2_tag_project }}_{{ ec2_tag_env }}_magento"
-#     format: "%Y-%m-%d %H:%M:%S"
-
 
 # PHP Global 'specify a lot of thing because I'm using php7 with php-fpm
 php_enable_webserver: true

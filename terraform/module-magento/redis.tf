@@ -1,11 +1,3 @@
-# resource "aws_route53_record" "redis" {
-#   zone_id = "${var.private_zone_id}"
-#   name    = "${var.project}-${var.elasticache_engine}0-${lookup(var.short_region, var.aws_region)}"
-#   type    = "CNAME"
-#   ttl     = "300"
-#   records = ["${aws_elasticache_cluster.redis.0.cache_nodes.0.address}"]
-# }
-
 resource "aws_security_group" "redis" {
   name        = "${var.project}-${var.elasticache_engine}-${lookup(var.short_region, var.aws_region)}-${var.env}"
   description = "${var.elasticache_engine} ${var.env} for ${var.project}"
