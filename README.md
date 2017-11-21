@@ -2,7 +2,11 @@
 
 Service catalog magento stack
 
-This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache.
+This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache. 
+
+<img src="https://raw.githubusercontent.com/cycloid-community-catalog/stack-magento/master/diagram.jpeg" width="400">
+
+
 
 ## Test ansible role with molecule
 
