@@ -354,12 +354,13 @@ jobs:
           run:
             path: /bin/sh
             args:
-            - -xec
+            - -ec
             - |
               mkdir -p /root/.ssh
               echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
               chmod 600  /root/.ssh/id_rsa
               echo ${ANSIBLE_VAULT_PASSWORD} > ansible-playbook/.vault-password
+              set -x
               rsync -av --delete ansible-playbook/ ${BASTION_URL}:/tmp/cycloid_magento/
 
               # FIXME should we keep those var as env ? or put them in ansible ? NOTE : those variables are required in the pipeline AND ansible. Duplicate info
@@ -418,12 +419,12 @@ jobs:
           run:
             path: /bin/sh
             args:
-            - -xec
+            - -ec
             - |
               mkdir -p /root/.ssh
               echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
               chmod 600  /root/.ssh/id_rsa
-
+              set -x
               ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento &&
                                                                 export ANSIBLE_FORCE_COLOR=true &&
                                                                 export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
