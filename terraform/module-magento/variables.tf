@@ -101,6 +101,10 @@ variable "rds_storage_type" {
   default = "gp2"
 }
 
+variable "rds_skip_final_snapshot" {
+  default = false
+}
+
 ###
 
 # front
