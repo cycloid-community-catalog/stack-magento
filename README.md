@@ -6,7 +6,11 @@ This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load ba
 
 <img src="https://raw.githubusercontent.com/cycloid-community-catalog/stack-magento/master/diagram.jpeg" width="400">
 
+> **Pipeline** The pipeline contain a manual approval between terraform plan and terraform apply.
+> That means if you trigger a terraform plan, to apply it, you have to go on terraform apply job
+> and click on the `+` button to trigger it.
 
+# Troubleshooting
 
 ## Test ansible role with molecule
 
