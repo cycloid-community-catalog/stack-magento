@@ -1,5 +1,5 @@
 ---
-- src: git@github.com:cycloidio/ansible-php
+- src: https://github.com/cycloidio/ansible-php
   version: master
   name: cycloid.php
   scm: git
@@ -8,14 +8,9 @@
   name: jdauphant.nginx
   scm: git
 
-- src: git@github.com:cycloidio/ansible-deployment.git
+- src: https://github.com/cycloidio/ansible-deployment
   version: master
   name: cycloid.deployment
-  scm: git
-
-- src: git@github.com:cycloidio/ansible-customer-ssh
-  version: master
-  name: cycloid.customer-ssh
   scm: git
 
 # FIXME : Remove this if we don't use EFS

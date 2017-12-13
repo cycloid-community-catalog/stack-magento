@@ -49,8 +49,8 @@ ansistrano_group: www-data
 ansistrano_user: magento
 ansistrano_keep_releases: 1
 # ansistrano_additional_path: "magento-{{ env }}"
-ansistrano_deploy_to: /home/www/magento/magento
-ansistrano_current_dir: magento
+ansistrano_deploy_to: "/home/{{ ansistrano_user }}/magento"
+ansistrano_current_dir: current
 ansistrano_deploy_via: "s3_unarchive"
 ansistrano_app_name: "magento"
 ansistrano_rolling_elb_enabled: false
@@ -59,7 +59,6 @@ ansistrano_s3_archive_content: true
 
 # Required by customer-ssh to create user home
 
-customer: "{{ansistrano_user}}"
 ansistrano_shared_paths:
   - pub/media
   - pub/sitemaps
@@ -124,7 +123,7 @@ nginx_sites:
         allow 127.0.0.1;
         deny all;
       }
-    - set $pool "{{customer}}"
+    - set $pool "{{ansistrano_user}}"
     - if ($arg_pool) {
         set $pool $arg_pool;
       }
@@ -139,7 +138,7 @@ nginx_sites:
   50-magento:
     - listen 80 default
     - server_name _
-    - set $MAGE_ROOT /home/www/magento/magento/magento/
+    - "set $MAGE_ROOT /home/{{ ansistrano_user }}/magento/current/"
     - root $MAGE_ROOT/pub
     - set $MAGE_MODE production
     - access_log /var/log/nginx/magento.access.log
@@ -342,8 +341,8 @@ php_packages:
 fpm_reopenlogs_path: /usr/lib/php/php7.0-fpm-reopenlogs
 php_slowlog_path: /var/log/php-slow.log
 php_fpm_pools:
-  - name: "{{customer}}"
-    user: "{{customer}}"
+  - name: "{{ansistrano_user}}"
+    user: "{{ansistrano_user}}"
     group: www-data
     listen: /var/run/php7.0-fpm.sock
     listen.owner: www-data

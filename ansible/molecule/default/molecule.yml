@@ -43,7 +43,7 @@ provisioner:
   playbooks:
     converge: ../../magento.yml
   options:
-    vault-password-file: ../../.vault-password
+    #vault-password-file: ../../.vault-password
     extra-vars: "env=test"
     #skip-tags: deploy
     #vvv: "True"
