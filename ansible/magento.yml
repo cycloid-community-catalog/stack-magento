@@ -14,11 +14,15 @@
     # See https://github.com/votum/ansible-role-magento2
     magento_install_options: "{{ lookup('template', 'install_options.j2') }}"
 
+  pre_tasks:
+  - user:
+      name: "{{ ansistrano_user }}"
+      home: "/home/{{ ansistrano_user }}"
   roles:
-    - role: cycloid.customer-ssh
-      home_directory: "/home/www/magento"
-      user: magento
-      tags: team-ssh
+#    - role: cycloid.customer-ssh
+#      home_directory: "/home/www/magento"
+#      user: magento
+#      tags: team-ssh
 
     # - {role: cycloid.postfix, tags: postfix}
     # require ses login/pass but install postfix
@@ -29,7 +33,7 @@
     # - role: cycloid.systemd
     #   systemd_type: mount
     #   systemd_mount_device: "...-efs-magento-eu-we1-preprod.magento.{{ env }}:/"
-    #   systemd_mount_mountpoint: /home/www/magento/magento/shared
+    #   systemd_mount_mountpoint: /home/magento/magento/shared
     #   systemd_mount_type: nfs
     #   tags: efs
     #
