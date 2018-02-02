@@ -1,18 +1,28 @@
 # Configuration of the CI pipeline
-pipeline:
+name: 'Magento'
+canonical: 'stack-magento'
+description: 'This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache.'
+keywords:
+  - 'magento'
+author: 'Cycloid'
+image: 'https://raw.githubusercontent.com/cycloid-community-catalog/stack-magento/blob/master/icon.png'
+type: 'stack'
+config:
+  # Configuration of the CI pipeline
   pipeline:
-    path: 'pipeline/magento.yml'
-  variables:
-    path: 'pipeline/variables.sample.yml'
+    pipeline:
+      path: 'pipeline/magento.yml'
+    variables:
+      path: 'pipeline/variables.sample.yml'
 
-# Configuration of ansible for provisionning
-ansible:
-  magento:
-    path: 'ansible/environments/front.yml.sample'
-    destination: 'ansible/environments/($ environment $)-front.yml'
+  # Configuration of ansible for provisionning
+  ansible:
+    magento:
+      path: 'ansible/environments/front.yml.sample'
+      destination: 'ansible/environments/($ environment $)-front.yml'
 
-# Configuration of terraform to setup the infrastructure    
-terraform:
-  magento:
-    path: 'terraform/magento.tf.sample'
-    destination: 'terraform/magento/($ environment $)/magento.tf'
+  # Configuration of terraform to setup the infrastructure
+  terraform:
+    magento:
+      path: 'terraform/magento.tf.sample'
+      destination: 'terraform/magento/($ environment $)/magento.tf'
