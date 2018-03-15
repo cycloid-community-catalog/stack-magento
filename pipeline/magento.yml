@@ -1,3 +1,61 @@
+shared:
+
+  # Task : sync and merge with rsync 2 rep. Used to merge stack and config
+  - &merge-stack-and-config
+    platform: linux
+    image_resource:
+      type: docker-image
+      source:
+        repository: cycloid/busybox
+        tag: latest
+    run:
+      path: /bin/sh
+      args:
+      - -xec
+      - |
+        cp -av catalog/${STACK_PATH}/. merged-catalog/
+        if [ -d "config/${CONFIG_PATH}" ]; then
+          cp -av config/${CONFIG_PATH}/. merged-catalog/
+        fi
+        echo "############ extract tag for the image : <catalog_id>-<config_id>"
+        echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+    outputs:
+    - name: merged-catalog
+      path: "merged-catalog"
+
+  # Task : connect on the bastion server and run ansible from it
+  - &run-ansible-from-bastion
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cycloid/busybox
+          tag: latest
+      run:
+        path: /bin/sh
+        args:
+        - -ec
+        - |
+          mkdir -p /root/.ssh
+          echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
+          chmod 600  /root/.ssh/id_rsa
+          echo ${ANSIBLE_VAULT_PASSWORD} > ansible-playbook/.vault-password
+          set -x
+          rsync -av --delete ansible-playbook/ ${BASTION_URL}:/tmp/cycloid_magento_${ENV}/
+
+          # FIXME should we keep those var as env ? or put them in ansible ? NOTE : those variables are required in the pipeline AND ansible. Duplicate info
+          ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento_${ENV} &&
+                                                            export ANSIBLE_FORCE_COLOR=true &&
+                                                            export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
+                                                            export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=${MAGENTO_DEPLOY_BUCKET_OBJECT_PATH} &&
+                                                            export MAGENTO_DEPLOY_BUCKET_REGION=${MAGENTO_DEPLOY_BUCKET_REGION} &&
+                                                            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} &&
+                                                            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} &&
+                                                            ansible-playbook --vault-password-file=.vault-password magento.yml -e env=${ENV} --diff ${EXTRA_ARGS}"
+      inputs:
+      - name: ansible-playbook
+
 groups:
 
 - name: magento-((env))
@@ -105,36 +163,18 @@ jobs:
         - get: catalog-config-terraform
           trigger: true
 
-        - task: merge-catalog-and-config
+
+        - task: merge-stack-and-config
           config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: cycloid/busybox
-                tag: latest
-            run:
-              path: /bin/sh
-              args:
-              - -xec
-              - |
-                cp -av catalog/terraform/. merged-catalog/
-                if [ -d "config/${CONFIG_PATH}" ]; then
-                  cp -av config/${CONFIG_PATH}/. merged-catalog/
-                fi
-                echo "############ extract tag for the image : <catalog_id>-<config_id>"
-                echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+            <<: *merge-stack-and-config
             inputs:
             - name: catalog-config-terraform
               path: "config"
             - name: stack-magento-terraform
               path: "catalog"
-            outputs:
-            - name: merged-catalog
-              path: "merged-catalog"
           params:
             CONFIG_PATH: terraform/((env))
-
+            STACK_PATH: terraform
 
         - put: terraform-magento-((env))
           params:
@@ -160,36 +200,17 @@ jobs:
           passed:
             - terraform-plan-magento-((env))
 
-        - task: merge-catalog-and-config
+        - task: merge-stack-and-config
           config:
-            platform: linux
-            image_resource:
-              type: docker-image
-              source:
-                repository: cycloid/busybox
-                tag: latest
-            run:
-              path: /bin/sh
-              args:
-              - -xec
-              - |
-                cp -av catalog/terraform/. merged-catalog/
-                if [ -d "config/${CONFIG_PATH}" ]; then
-                  cp -av config/${CONFIG_PATH}/. merged-catalog/
-                fi
-                echo "############ extract tag for the image : <catalog_id>-<config_id>"
-                echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+            <<: *merge-stack-and-config
             inputs:
             - name: catalog-config-terraform
               path: "config"
             - name: stack-magento-terraform
               path: "catalog"
-            outputs:
-            - name: merged-catalog
-              path: "merged-catalog"
           params:
             CONFIG_PATH: terraform/((env))
-
+            STACK_PATH: terraform
 
         - put: terraform-magento-((env))
           params:
@@ -295,35 +316,17 @@ jobs:
         passed: [magento-((env))-unittests]
         trigger: false
 
-      - task: merge-catalog-and-config
+      - task: merge-stack-and-config
         config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: cycloid/busybox
-              tag: latest
-          run:
-            path: /bin/sh
-            args:
-            - -xec
-            - |
-              cp -av catalog/ansible/. merged-catalog/
-              if [ -d "config/${CONFIG_PATH}" ]; then
-                cp -av config/${CONFIG_PATH}/. merged-catalog/
-              fi
-              echo "############ extract tag for the image : <catalog_id>-<config_id>"
-              echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+          <<: *merge-stack-and-config
           inputs:
           - name: catalog-config-ansible
             path: "config"
           - name: stack-magento-ansible
             path: "catalog"
-          outputs:
-          - name: merged-catalog
-            path: "merged-catalog"
         params:
           CONFIG_PATH: ansible
+          STACK_PATH: ansible
 
       - task: extract-terraform-outputs
         config:
@@ -368,7 +371,7 @@ jobs:
           outputs:
           - name: ansible-playbook
 
-      - task: connect-bastion
+      - task: sync-playbook
         config:
           platform: linux
           image_resource:
@@ -382,23 +385,21 @@ jobs:
             - -ec
             - |
               mkdir -p /root/.ssh
-              echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
+              echo "${BASTION_PRIVATE_KEY}" > /root/.ssh/id_rsa
               chmod 600  /root/.ssh/id_rsa
               echo ${ANSIBLE_VAULT_PASSWORD} > ansible-playbook/.vault-password
               set -x
               rsync -av --delete ansible-playbook/ ${BASTION_URL}:/tmp/cycloid_magento_${ENV}/
-
-              # FIXME should we keep those var as env ? or put them in ansible ? NOTE : those variables are required in the pipeline AND ansible. Duplicate info
-              ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento_${ENV} &&
-                                                                export ANSIBLE_FORCE_COLOR=true &&
-                                                                export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
-                                                                export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=${MAGENTO_DEPLOY_BUCKET_OBJECT_PATH} &&
-                                                                export MAGENTO_DEPLOY_BUCKET_REGION=${MAGENTO_DEPLOY_BUCKET_REGION} &&
-                                                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} &&
-                                                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} &&
-                                                                ansible-playbook --vault-password-file=.vault-password magento.yml -e env=${ENV} --diff"
           inputs:
           - name: ansible-playbook
+        params:
+          ENV: ((env))
+          BASTION_URL: ((bastion_url))
+          BASTION_PRIVATE_KEY: ((bastion_ssh.ssh_key))
+          ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
+
+      - task: connect-bastion
+        <<: *run-ansible-from-bastion
         params:
           ENV: ((env))
           BASTION_URL: ((bastion_url))
@@ -433,30 +434,7 @@ jobs:
         passed: [magento-((env))-unittests]
 
       - task: connect-bastion
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: cycloid/busybox
-              tag: latest
-          run:
-            path: /bin/sh
-            args:
-            - -ec
-            - |
-              mkdir -p /root/.ssh
-              echo "((bastion_private_key_pair))" > /root/.ssh/id_rsa
-              chmod 600  /root/.ssh/id_rsa
-              set -x
-              ssh -o StrictHostKeyChecking=no "${BASTION_URL}" "cd /tmp/cycloid_magento_${ENV} &&
-                                                                export ANSIBLE_FORCE_COLOR=true &&
-                                                                export MAGENTO_DEPLOY_BUCKET_NAME=${MAGENTO_DEPLOY_BUCKET_NAME} &&
-                                                                export MAGENTO_DEPLOY_BUCKET_OBJECT_PATH=${MAGENTO_DEPLOY_BUCKET_OBJECT_PATH} &&
-                                                                export MAGENTO_DEPLOY_BUCKET_REGION=${MAGENTO_DEPLOY_BUCKET_REGION} &&
-                                                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} &&
-                                                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} &&
-                                                                ansible-playbook --vault-password-file=.vault-password magento.yml -e env=${ENV} --diff --tags ${TAGS}"
+        <<: *run-ansible-from-bastion
         params:
           ENV: ((env))
           BASTION_URL: ((bastion_url))
@@ -466,7 +444,7 @@ jobs:
           MAGENTO_DEPLOY_BUCKET_REGION: ((magento_deploy_bucket_region))
           AWS_ACCESS_KEY_ID: ((magento_deploy_bucket_access_key))
           AWS_SECRET_ACCESS_KEY: ((magento_deploy_bucket_secret_access_key))
-          TAGS: "deploy"
+          EXTRA_ARGS: "--tags deploy"
 
   - name: magento-((env))-functional-tests
     max_in_flight: 1
