@@ -27,7 +27,7 @@ variable "zones" {
 }
 
 variable "keypair_name" {
-  default = "cycloid"
+  default = "demo"
 }
 
 variable "private_subnets_ids" {

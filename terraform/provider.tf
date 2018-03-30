@@ -4,6 +4,10 @@ provider "aws" {
   region     = "${var.aws_region}"
 }
 
+variable "customer" {}
+variable "project" {}
+variable "env" {}
+
 variable "access_key" {}
 variable "secret_key" {}
 variable "aws_region" {
