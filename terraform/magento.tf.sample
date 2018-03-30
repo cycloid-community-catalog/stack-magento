@@ -5,7 +5,9 @@ variable "rds_password" {
 module "magento" {
   source = "module-magento"
 
-  env                      = "($ environment $)"
+  env     = "${var.env}"
+  project = "${var.project}"
+
   vpc_id                   = "<vpc-id>"
   private_subnets_ids      = ["private-subnets"]
   magento_ssl_cert         = "<ssl-cert-arn>"
@@ -15,6 +17,9 @@ module "magento" {
   rds_password             = "${var.rds_password}"
 
   # project = "magento"
+
+  # SSH keypair name to use to deploy ec2 instances
+  # keypair_name = "demo"
 
   # FIXME optimized false : should be changes with the instance type ?
 
