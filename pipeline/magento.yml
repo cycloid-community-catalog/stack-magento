@@ -6,22 +6,13 @@ shared:
     image_resource:
       type: docker-image
       source:
-        repository: cycloid/busybox
+        repository: cycloid/cycloid-toolkit
         tag: latest
     run:
-      path: /bin/sh
-      args:
-      - -xec
-      - |
-        cp -av catalog/${STACK_PATH}/. merged-catalog/
-        if [ -d "config/${CONFIG_PATH}" ]; then
-          cp -av config/${CONFIG_PATH}/. merged-catalog/
-        fi
-        echo "############ extract tag for the image : <catalog_id>-<config_id>"
-        echo "$(git --git-dir=catalog/.git rev-parse --verify HEAD --short)-$(git --git-dir=config/.git rev-parse --verify HEAD --short)" | tee merged-catalog/tag
+      path: /usr/bin/merge-stack-and-config
     outputs:
-    - name: merged-catalog
-      path: "merged-catalog"
+    - name: merged-stack
+      path: "merged-stack"
 
   # Task : connect on the bastion server and run ansible from it
   - &run-ansible-from-bastion
@@ -31,40 +22,14 @@ shared:
         type: docker-image
         source:
           repository: cycloid/cycloid-toolkit
-          tag: v2.4
+          tag: latest
       run:
         path: /usr/bin/ansible-runner
       caches:
         - path: ansible-playbook/roles
       inputs:
-      - name: ansible-playbook
+      - name: merged-stack
         path: ansible-playbook
-
-  # Task : extract output of terraform to provide it to ansible
-  - &extract-terraform-outputs
-    task: extract-terraform-outputs
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: ruby
-          tag: latest
-      run:
-        path: /bin/sh
-        args:
-        - -xec
-        - |
-          cp -av merged-catalog/. ansible-playbook/
-          ruby -ryaml -rjson -e 'puts YAML.dump(JSON.parse(STDIN.read))' < terraform/metadata | tail -n +2 | tee -a ansible-playbook/group_vars/all
-      inputs:
-      - name: merged-catalog
-      - name: terraform-magento-((env))
-        path: "terraform"
-      outputs:
-      - name: ansible-playbook
-        path: "ansible-playbook"
-
 
 groups:
 
@@ -176,7 +141,6 @@ jobs:
         - get: catalog-config-terraform
           trigger: true
 
-
         - task: merge-stack-and-config
           config:
             <<: *merge-stack-and-config
@@ -184,7 +148,7 @@ jobs:
             - name: catalog-config-terraform
               path: "config"
             - name: stack-magento-terraform
-              path: "catalog"
+              path: "stack"
           params:
             CONFIG_PATH: terraform/((env))
             STACK_PATH: terraform
@@ -193,7 +157,7 @@ jobs:
           params:
             env_name: magento-((env))
             plan_only: true
-            terraform_source: merged-catalog/
+            terraform_source: merged-stack/
 
   - name: terraform-apply-magento-((env))
     build_logs_to_retain: 10
@@ -220,7 +184,7 @@ jobs:
             - name: catalog-config-terraform
               path: "config"
             - name: stack-magento-terraform
-              path: "catalog"
+              path: "stack"
           params:
             CONFIG_PATH: terraform/((env))
             STACK_PATH: terraform
@@ -229,7 +193,7 @@ jobs:
           params:
             env_name: magento-((env))
             run_plan: true
-            terraform_source: merged-catalog/
+            terraform_source: merged-stack/
 
   - name: magento-((env))-build
     max_in_flight: 1
@@ -336,12 +300,12 @@ jobs:
           - name: catalog-config-ansible
             path: "config"
           - name: stack-magento-ansible
-            path: "catalog"
+            path: "stack"
+          - name: terraform-magento-((env))
+            path: "terraform"
         params:
           CONFIG_PATH: ansible
           STACK_PATH: ansible
-
-      - *extract-terraform-outputs
 
       - task: run-ansible
         <<: *run-ansible-from-bastion
@@ -396,12 +360,12 @@ jobs:
           - name: catalog-config-ansible
             path: "config"
           - name: stack-magento-ansible
-            path: "catalog"
+            path: "stack"
+          - name: terraform-magento-((env))
+            path: "terraform"
         params:
           CONFIG_PATH: ansible
           STACK_PATH: ansible
-
-      - *extract-terraform-outputs
 
       - task: run-ansible
         <<: *run-ansible-from-bastion
