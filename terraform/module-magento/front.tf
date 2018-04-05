@@ -17,11 +17,11 @@ resource "aws_security_group" "front" {
   }
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-front-${var.env}"
-    env     = "${var.env}"
-    project = "${var.project}"
-    role    = "front"
+    cycloid.io = "true"
+    Name       = "${var.project}-front-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
+    role       = "front"
   }
 }
 
@@ -73,11 +73,11 @@ resource "aws_instance" "front" {
   }
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-front${count.index}-${lookup(var.short_region, var.aws_region)}-${var.env}"
-    env     = "${var.env}"
-    project = "${var.project}"
-    role    = "front"
+    cycloid.io = "true"
+    Name       = "${var.project}-front${count.index}-${lookup(var.short_region, var.aws_region)}-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
+    role       = "front"
   }
 }
 
@@ -114,10 +114,10 @@ resource "aws_security_group" "elb-front" {
   }
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-elb-front-${var.env}"
-    env     = "${var.env}"
-    project = "${var.project}"
+    cycloid.io = "true"
+    Name       = "${var.project}-elb-front-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
   }
 }
 
@@ -161,11 +161,11 @@ resource "aws_elb" "front" {
   idle_timeout              = 120
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-front-${lookup(var.short_region, var.aws_region)}-${var.env}"
-    role    = "front"
-    env     = "${var.env}"
-    project = "${var.project}"
+    cycloid.io = "true"
+    Name       = "${var.project}-front-${lookup(var.short_region, var.aws_region)}-${var.env}"
+    role       = "front"
+    env        = "${var.env}"
+    project    = "${var.project}"
   }
 }
 

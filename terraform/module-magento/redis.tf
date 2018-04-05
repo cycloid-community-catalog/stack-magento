@@ -14,11 +14,11 @@ resource "aws_security_group" "redis" {
   }
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-${var.elasticache_engine}-${lookup(var.short_region, var.aws_region)}-${var.env}"
-    env     = "${var.env}"
-    project = "${var.project}"
-    role    = "redis"
+    cycloid.io = "true"
+    Name       = "${var.project}-${var.elasticache_engine}-${lookup(var.short_region, var.aws_region)}-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
+    role       = "redis"
   }
 }
 
@@ -35,10 +35,10 @@ resource "aws_elasticache_cluster" "redis" {
   maintenance_window   = "tue:06:00-tue:07:00"
 
   tags {
-    engine  = "cycloid.io"
-    Name    = "${var.project}-${var.elasticache_engine}-${lookup(var.short_region, var.aws_region)}-${var.env}"
-    env     = "${var.env}"
-    project = "${var.project}"
+    cycloid.io = "true"
+    Name       = "${var.project}-${var.elasticache_engine}-${lookup(var.short_region, var.aws_region)}-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
   }
 }
 
