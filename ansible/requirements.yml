@@ -13,6 +13,11 @@
   name: cycloid.deployment
   scm: git
 
+- src: git@github.com:cycloidio/ansible-fluentd.git
+  version: master
+  name: cycloid.fluentd
+  scm: git
+
 # FIXME : Remove this if we don't use EFS
 # - src: git@github.com:cycloidio/ansible-systemd
 #   version: master

@@ -54,7 +54,7 @@ resource "aws_instance" "front" {
   ami                         = "${data.aws_ami.debian_jessie.id}"
   # associate_public_ip_address = false
   count                       = "${var.front_count}"
-  # iam_instance_profile        = "${aws_iam_instance_profile.front_profile.name}"
+  iam_instance_profile        = "${aws_iam_instance_profile.front_profile.name}"
   instance_type               = "${var.front_type}"
   key_name                    = "${var.keypair_name}"
   ebs_optimized               = "${var.front_ebs_optimized}"
