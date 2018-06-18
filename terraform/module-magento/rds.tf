@@ -46,6 +46,7 @@ resource "aws_db_instance" "magento" {
   backup_retention_period   = "${var.rds_backup_retention}"
   final_snapshot_identifier = "${var.project}-rds-${lookup(var.short_region, var.aws_region)}-${var.env}"
   skip_final_snapshot       = "${var.rds_skip_final_snapshot}"
+  copy_tags_to_snapshot     = true
 
   parameter_group_name   = "${var.rds_parameters}"
   db_subnet_group_name   = "${var.rds_subnet}"
