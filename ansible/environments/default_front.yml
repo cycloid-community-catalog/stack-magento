@@ -42,7 +42,7 @@ ansistrano_parameters_template: env.php.j2
 ansistrano_parameters_destination: app/etc/env.php
 
 # Deployment common vars
-ansistrano_php_fpm_service_name: "php7.0-fpm"
+ansistrano_php_fpm_service_name: "php{{php_version_to_install}}-fpm"
 ansistrano_php_fpm_enabled: true
 ansistrano_group: www-data
 
@@ -100,7 +100,7 @@ nginx_configs:
     - fastcgi_buffers 16 16k
     - fastcgi_buffer_size 32k
   upstream:
-    - upstream www-data { server "unix:/var/run/php7.0-fpm.sock"; }
+    - upstream www-data { server "unix:/var/run/php{{php_version_to_install}}-fpm.sock"; }
   gzip:
     - gzip on
     - gzip_disable msie6
@@ -300,12 +300,8 @@ php_debian_pkg_name:
   - 'deb http://packages.dotdeb.org jessie all'
 php_debian_pkg_key: 'https://www.dotdeb.org/dotdeb.gpg'
 php_date_timezone: "Europe/Paris"
-php_enable_php_fpm: true
-php_conf_path: "/etc/php/7.0"
-php_fpm_daemon: "php7.0-fpm"
-php_extension_conf_paths:
-  - "{{php_conf_path}}/fpm/conf.d"
-  - "{{php_conf_path}}/cli/conf.d"
+php_version_to_install: "7.0"
+
 # PHP Configuration
 # Average size of a process: ps -ylC php7.0-fpm --sort:rss (result in KB, value below in MB)
 php_average_process_size: 100
@@ -314,37 +310,35 @@ php_memory_limit: "768M"
 php_max_execution_time: "600"
 php_upload_max_filesize: "256M"
 php_packages:
-  - php7.0
-  - php7.0-mcrypt
-  - php7.0-cli
-  - php7.0-common
-  - php7.0-curl
-  - php7.0-dev
-  - php7.0-fpm
-  - php7.0-gd
-  - php7.0-ssh2
+  - php{{php_version_to_install}}
+  - php{{php_version_to_install}}-mcrypt
+  - php{{php_version_to_install}}-cli
+  - php{{php_version_to_install}}-common
+  - php{{php_version_to_install}}-curl
+  - php{{php_version_to_install}}-dev
+  - php{{php_version_to_install}}-fpm
+  - php{{php_version_to_install}}-gd
+  - php{{php_version_to_install}}-ssh2
   - php-pear
-  - php7.0-apcu
-  - php7.0-xsl
-  - php7.0-intl
-  - php7.0-mbstring
-  - php7.0-bcmath
-  - php7.0-zip
+  - php{{php_version_to_install}}-apcu
+  - php{{php_version_to_install}}-xsl
+  - php{{php_version_to_install}}-intl
+  - php{{php_version_to_install}}-mbstring
+  - php{{php_version_to_install}}-bcmath
+  - php{{php_version_to_install}}-zip
   - libpcre3-dev
-  - php7.0-memcached
-  - php7.0-mysql
-  - php7.0-soap
-  - php7.0-gd
-  - php7.0-xml
-  - php7.0-json
+  - php{{php_version_to_install}}-memcached
+  - php{{php_version_to_install}}-mysql
+  - php{{php_version_to_install}}-soap
+  - php{{php_version_to_install}}-gd
+  - php{{php_version_to_install}}-xml
+  - php{{php_version_to_install}}-json
 
-fpm_reopenlogs_path: /usr/lib/php/php7.0-fpm-reopenlogs
-php_slowlog_path: /var/log/php-slow.log
 php_fpm_pools:
   - name: "{{ansistrano_user}}"
     user: "{{ansistrano_user}}"
     group: www-data
-    listen: /var/run/php7.0-fpm.sock
+    listen: /var/run/php{{php_version_to_install}}-fpm.sock
     listen.owner: www-data
     listen.group: www-data
     slowlog: "{{ php_slowlog_path }}"
