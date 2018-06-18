@@ -26,6 +26,7 @@
 
     # - {role: cycloid.postfix, tags: postfix}
     # require ses login/pass but install postfix
+    - {role: cycloid.fluentd, tags: fluentd}
     - {role: cycloid.php, tags: php}
     - {role: jdauphant.nginx, tags: nginx}
 
