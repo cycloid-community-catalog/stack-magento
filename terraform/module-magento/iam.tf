@@ -55,29 +55,29 @@ data "aws_iam_policy_document" "push-logs" {
   statement {
     effect  = "Allow"
     actions = [
-      "logs:ListTagsLogGroup",
-      "logs:DescribeLogGroups",
       "logs:UntagLogGroup",
-      "logs:DescribeLogStreams",
-      "logs:DescribeSubscriptionFilters",
-      "logs:DescribeMetricFilters",
-      "logs:PutLogEvents",
-      "logs:CreateLogStream",
       "logs:TagLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:PutLogEvents",
       "logs:DeleteRetentionPolicy",
-      "logs:PutRetentionPolicy"
+      "logs:CreateLogStream"
     ]
-    resources = ["arn:aws:logs:*:*:log-group:${var.project}_${var.env}"]
+    resources = ["arn:aws:logs:*:*:log-group:${var.project}_${var.env}:*"]
   }
 
   statement {
     effect  = "Allow"
     actions = [
-      "logs:DescribeExportTasks",
+      "logs:ListTagsLogGroup",
+      "logs:DescribeSubscriptionFilters",
+      "logs:DescribeMetricFilters",
+      "logs:DescribeLogStreams",
+      "logs:DescribeLogGroups",
       "logs:TestMetricFilter",
-      "logs:CreateLogGroup",
       "logs:DescribeResourcePolicies",
-      "logs:DescribeDestinations"
+      "logs:DescribeExportTasks",
+      "logs:DescribeDestinations",
+      "logs:CreateLogGroup"
     ]
     resources = ["*"]
   }
