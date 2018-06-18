@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "push-logs" {
       "logs:DeleteRetentionPolicy",
       "logs:PutRetentionPolicy"
     ]
-    resources = ["arn": "arn:aws:logs:*:*:log-group:${var.project}_${var.env}"]
+    resources = ["arn:aws:logs:*:*:log-group:${var.project}_${var.env}"]
   }
 
   statement {
