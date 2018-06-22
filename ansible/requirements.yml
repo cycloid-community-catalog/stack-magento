@@ -13,7 +13,7 @@
   name: cycloid.deployment
   scm: git
 
-- src: git@github.com:cycloidio/ansible-fluentd.git
+- src: https://github.com/cycloidio/ansible-fluentd
   version: master
   name: cycloid.fluentd
   scm: git
