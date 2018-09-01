@@ -100,7 +100,7 @@ resources:
     check_every: 2m
     private_key: ((magento_config_git_private_key))
     paths:
-      - ansible/*
+      - magento/ansible/*
 
 - name: stack-magento-terraform
   type: git
@@ -119,7 +119,7 @@ resources:
     check_every: 2m
     private_key: ((magento_config_git_private_key))
     paths:
-      - terraform/*
+      - magento/terraform/*
 
 - name: magento-code
   type: git
@@ -150,7 +150,7 @@ jobs:
             - name: stack-magento-terraform
               path: "stack"
           params:
-            CONFIG_PATH: terraform/((env))
+            CONFIG_PATH: magento/terraform/((env))
             STACK_PATH: terraform
 
         - put: terraform-magento-((env))
@@ -186,7 +186,7 @@ jobs:
             - name: stack-magento-terraform
               path: "stack"
           params:
-            CONFIG_PATH: terraform/((env))
+            CONFIG_PATH: magento/terraform/((env))
             STACK_PATH: terraform
 
         - put: terraform-magento-((env))
@@ -304,7 +304,7 @@ jobs:
           - name: terraform-magento-((env))
             path: "terraform"
         params:
-          CONFIG_PATH: ansible
+          CONFIG_PATH: magento/ansible
           STACK_PATH: ansible
 
       - task: run-ansible
@@ -364,7 +364,7 @@ jobs:
           - name: terraform-magento-((env))
             path: "terraform"
         params:
-          CONFIG_PATH: ansible
+          CONFIG_PATH: magento/ansible
           STACK_PATH: ansible
 
       - task: run-ansible
