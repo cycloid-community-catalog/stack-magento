@@ -42,6 +42,9 @@ groups:
   - terraform-apply-magento-((env))
   - magento-((env))-unittests
   - magento-((env))-functional-tests
+- name: destroy-magento-test
+  jobs:
+  - terraform-destroy-magento-test
 
 resource_types:
 
@@ -194,6 +197,35 @@ jobs:
             env_name: magento-((env))
             run_plan: true
             terraform_source: merged-stack/
+
+  - name: terraform-destroy-magento-((env))
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+      - do:
+          - get: stack-magento-terraform
+            trigger: false
+          - get: catalog-config-terraform
+            trigger: false
+          - task: merge-stack-and-config
+            config:
+              <<: *merge-stack-and-config
+              inputs:
+              - name: catalog-config-terraform
+                path: "config"
+              - name: stack-magento-terraform
+                path: "stack"
+            params:
+              CONFIG_PATH: magento/terraform/((env))
+              STACK_PATH: terraform
+
+          - put: terraform-magento-((env))
+            params:
+              action: destroy
+              env_name: magento-((env))
+              terraform_source: merged-stack/
+            get_params:
+              action: destroy
 
   - name: magento-((env))-build
     max_in_flight: 1
