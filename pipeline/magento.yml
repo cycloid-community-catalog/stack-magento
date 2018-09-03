@@ -33,18 +33,18 @@ shared:
 
 groups:
 
-- name: magento-((env))
+- name: overview
   jobs:
-  - magento-((env))-build
-  - full-deploy-front-magento-((env))
-  - app-deploy-front-magento-((env))
-  - terraform-plan-magento-((env))
-  - terraform-apply-magento-((env))
-  - magento-((env))-unittests
-  - magento-((env))-functional-tests
-- name: destroy-magento-test
+  - build
+  - full-deploy-front
+  - app-deploy-front
+  - terraform-plan
+  - terraform-apply
+  - unittests
+  - functional-tests
+- name: destroy
   jobs:
-  - terraform-destroy-magento-test
+  - terraform-destroy
 
 resource_types:
 
@@ -134,7 +134,7 @@ resources:
 
 
 jobs:
-  - name: terraform-plan-magento-((env))
+  - name: terraform-plan
     max_in_flight: 1
     build_logs_to_retain: 10
     plan:
@@ -162,7 +162,7 @@ jobs:
             plan_only: true
             terraform_source: merged-stack/
 
-  - name: terraform-apply-magento-((env))
+  - name: terraform-apply
     build_logs_to_retain: 10
     plan:
       - do:
@@ -170,15 +170,15 @@ jobs:
         - get: stack-magento-terraform
           trigger: false
           passed:
-            - terraform-plan-magento-((env))
+            - terraform-plan
         - get: catalog-config-terraform
           trigger: false
           passed:
-            - terraform-plan-magento-((env))
+            - terraform-plan
         - get: terraform-magento-((env))
           trigger: false
           passed:
-            - terraform-plan-magento-((env))
+            - terraform-plan
 
         - task: merge-stack-and-config
           config:
@@ -198,7 +198,7 @@ jobs:
             run_plan: true
             terraform_source: merged-stack/
 
-  - name: terraform-destroy-magento-((env))
+  - name: terraform-destroy
     max_in_flight: 1
     build_logs_to_retain: 10
     plan:
@@ -227,7 +227,7 @@ jobs:
             get_params:
               action: destroy
 
-  - name: magento-((env))-build
+  - name: build
     max_in_flight: 1
     build_logs_to_retain: 10
     plan:
@@ -274,16 +274,16 @@ jobs:
           acl: private
           file: release/magento-release.tar.gz
 
-  - name: magento-((env))-unittests
+  - name: unittests
     max_in_flight: 1
     build_logs_to_retain: 10
     plan:
     - do:
       - get: magento-release
         trigger: true
-        passed: [magento-((env))-build]
+        passed: [build]
       - get: magento-code
-        passed: [magento-((env))-build]
+        passed: [build]
         trigger: false
 
       - task: run
@@ -302,7 +302,7 @@ jobs:
               DIR=${PWD}
               echo "Dummy tests OK"
 
-  - name: full-deploy-front-magento-((env))
+  - name: full-deploy-front
     build_logs_to_retain: 10
     plan:
     - do:
@@ -310,7 +310,7 @@ jobs:
       - get: terraform-magento-((env))
         trigger: true
         passed:
-          - terraform-apply-magento-((env))
+          - terraform-apply
 
       - get: stack-magento-ansible
         trigger: true
@@ -319,10 +319,10 @@ jobs:
 
       - get: magento-release
         trigger: false
-        passed: [magento-((env))-unittests]
+        passed: [unittests]
 
       - get: magento-code
-        passed: [magento-((env))-unittests]
+        passed: [unittests]
         trigger: false
 
       - task: merge-stack-and-config
@@ -358,7 +358,7 @@ jobs:
             env: ((env))
 
 
-  - name: app-deploy-front-magento-((env))
+  - name: app-deploy-front
     build_logs_to_retain: 10
     plan:
     - do:
@@ -366,24 +366,24 @@ jobs:
       - get: stack-magento-ansible
         trigger: false
         passed:
-          - full-deploy-front-magento-((env))
+          - full-deploy-front
 
       - get: catalog-config-ansible
         trigger: false
         passed:
-          - full-deploy-front-magento-((env))
+          - full-deploy-front
 
       - get: terraform-magento-((env))
         trigger: false
         passed:
-          - full-deploy-front-magento-((env))
+          - full-deploy-front
 
       - get: magento-release
         trigger: true
-        passed: [magento-((env))-unittests]
+        passed: [unittests]
       - get: magento-code
         trigger: false
-        passed: [magento-((env))-unittests]
+        passed: [unittests]
 
       - task: merge-stack-and-config
         config:
@@ -419,16 +419,16 @@ jobs:
           TAGS:
             - deploy
 
-  - name: magento-((env))-functional-tests
+  - name: functional-tests
     max_in_flight: 1
     build_logs_to_retain: 10
     plan:
     - do:
       - get: magento-release
         trigger: true
-        passed: [app-deploy-front-magento-((env))]
+        passed: [app-deploy-front]
       - get: magento-code
-        passed: [app-deploy-front-magento-((env))]
+        passed: [app-deploy-front]
         trigger: false
 
 
