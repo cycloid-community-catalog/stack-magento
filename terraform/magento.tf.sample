@@ -38,7 +38,7 @@ module "magento" {
   # cache_subnet                     = "cache-subnet-id"
   # elasticache_type                 = "cache.t2.micro"
   # elasticache_nodes                = "1"
-  # elasticache_parameter_group_name = "default.redis3.2"
+  # elasticache_parameter_group_name = "default.redis4.0"
   # elasticache_engine               = "redis"
   # elasticache_port                 = "6379"
 
