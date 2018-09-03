@@ -6,9 +6,47 @@ This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load ba
 
 <img src="https://raw.githubusercontent.com/cycloid-community-catalog/stack-magento/master/diagram.jpeg" width="400">
 
-> **Pipeline** The pipeline contain a manual approval between terraform plan and terraform apply.
+> **Pipeline** The pipeline contains a manual approval between terraform plan and terraform apply.
 > That means if you trigger a terraform plan, to apply it, you have to go on terraform apply job
 > and click on the `+` button to trigger it.
+
+# Requirements
+
+In order to run this task, couple elements are required within the infrastructure:
+
+* Having a VPC with private & public subnets containing a bastion server that can access instances by SSH
+* Having an S3 bucket for terraform remote states
+* Having an S3 bucket for magento code WITH versioning enable
+
+# Job description
+
+## Overview
+
+**build:**
+Runs the appropriate php/composer commands to build the magento code.
+
+**unittest**
+Dummy job meant to eventually be replaced by proper tests or removed.
+
+**full-deploy-front:**
+Ansible job that will fully install the EC2 instances, users, config, etc.
+
+**app-deploy-front:**
+Ansible job meant to only deploy the Magento code in case of deployment.
+
+**functional-test:**
+Same as unittest, that's a dummy job to eventually ensure everything is working as expected following the deployment.
+
+**terraform-plan:**
+Terraform job that will simply make a plan of the infrastructure's stack.
+
+**terraform-apply:**
+Terraform job similar to the plan one, but will actually create/update everything that needs to. Please see the plan diff for a better understanding.
+
+## /!\ Destroy /!\
+**terraform-destroy:**
+Terraform job meant to destroy the whole stack - **NO CONFIRMATION ASKED**. If triggered, the full project **WILL** be destroyed.
+Use with caution.
 
 # Troubleshooting
 

@@ -19,10 +19,10 @@ config:
   ansible:
     magento:
       path: 'ansible/environments/front.yml.sample'
-      destination: 'ansible/environments/($ environment $)-front.yml'
+      destination: '($ project $)/ansible/($ environment $)-front.yml'
 
   # Configuration of terraform to setup the infrastructure
   terraform:
     magento:
       path: 'terraform/magento.tf.sample'
-      destination: 'terraform/magento/($ environment $)/magento.tf'
+      destination: '($ project $)/terraform/($ environment $)/magento.tf'

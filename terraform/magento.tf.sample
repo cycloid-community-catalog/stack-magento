@@ -30,22 +30,21 @@ module "magento" {
   # rds_subnet           = "<rds-subnet-id>"
   # rds_type             = "db.t2.small"
   # rds_username         = "magento"
-  # rds_engine           = ""mysql"
+  # rds_engine           = "mysql"
   # rds_engine_version   = "5.7.16"
   # rds_backup_retention = 7
   # rds_parameters       = ""
 
-front_ebs_optimized
-
   # cache_subnet                     = "cache-subnet-id"
   # elasticache_type                 = "cache.t2.micro"
-  # elasticache_nodes                = "1
-  # elasticache_parameter_group_name = "default.redis3.2"
+  # elasticache_nodes                = "1"
+  # elasticache_parameter_group_name = "default.redis4.0"
   # elasticache_engine               = "redis"
   # elasticache_port                 = "6379"
+
   # front_count           = "1"
   # front_disk_size       = "60"
   # front_disk_type       = "gp2"
   # front_type            = "t2.small"
-
+  # front_ebs_optimized   = "false"
 }
