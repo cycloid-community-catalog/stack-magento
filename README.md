@@ -18,6 +18,36 @@ In order to run this task, couple elements are required within the infrastructur
 * Having an S3 bucket for terraform remote states
 * Having an S3 bucket for magento code WITH versioning enable
 
+# Job description
+
+## Overview
+
+**build:**
+Runs the appropriate php/composer commands to build the magento code.
+
+**unittest**
+Dummy job meant to eventually be replaced by proper tests or removed.
+
+**full-deploy-front:**
+Ansible job that will fully install the EC2 instances, users, config, etc.
+
+**app-deploy-front:**
+Ansible job meant to only deploy the Magento code in case of deployment.
+
+**functional-test:**
+Same as unittest, that's a dummy job to eventually ensure everything is working as expected following the deployment.
+
+**terraform-plan:**
+Terraform job that will simply make a plan of the infrastructure's stack.
+
+**terraform-apply:**
+Terraform job similar to the plan one, but will actually create/update everything that needs to. Please see the plan diff for a better understanding.
+
+## /!\ Destroy /!\
+**terraform-destroy:**
+Terraform job meant to destroy the whole stack - **NO CONFIRMATION ASKED**. If triggered, the full project **WILL** be destroyed.
+Use with caution.
+
 # Troubleshooting
 
 ## Test ansible role with molecule
