@@ -9,7 +9,7 @@
 
   vars_files:
     - "environments/default_front.yml"
-    - "{{env}}-front.yml"
+    - ["environments/{{env}}-front.yml", "{{env}}-front.yml"]
   vars:
     # See https://github.com/votum/ansible-role-magento2
     magento_install_options: "{{ lookup('template', 'install_options.j2') }}"

@@ -12,7 +12,7 @@ lint:
     config-data: "{extends: relaxed, rules: {line-length: {max: 200}}}"
 platforms:
   - name: mysql
-    image: mysql
+    image: mysql:5
     env:
         MYSQL_USER: magento
         MYSQL_PASSWORD: s3cr3t
@@ -23,12 +23,16 @@ platforms:
     image: redis
     command: redis-server
   - name: instance
-    image: debian:jessie
-    published_ports: "80:80"
+    image: debian:stretch
+    command: "/bin/systemd"
+    privileged: yes
+    published_ports:
+      - "80:80"
     groups:
      - tag_role_front
      - tag_project_magento
      - tag_engine_cycloid_io
+     - tag_cycloid_io_true
      - tag_env_test
     links:
      - mysql:mysql
@@ -44,7 +48,9 @@ provisioner:
     converge: ../../magento.yml
   options:
     #vault-password-file: ../../.vault-password
-    extra-vars: "env=test"
+    extra-vars:
+      env: test
+      project: test
     #skip-tags: deploy
     #vvv: "True"
 

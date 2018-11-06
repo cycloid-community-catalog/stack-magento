@@ -12,7 +12,7 @@ magento_admin_password: 4Bigs3cr3t
 
 # Variable given by the pipeline
 ansistrano_s3_bucket: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_NAME') | default('magento-deploy')}}"
-ansistrano_s3_object: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_OBJECT_PATH') | default('/magento/{{ env }}/magento-{{ env }}.tar.gz')}}"
+ansistrano_s3_object: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_OBJECT_PATH') | default('magento/{{ env }}/magento-{{ env }}.tar.gz')}}"
 ansistrano_s3_region: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_REGION') | default('eu-west-1')}}"
 ansistrano_s3_aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') | default(omit)}}"
 ansistrano_s3_aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') | default(omit)}}"
@@ -297,10 +297,10 @@ php_enable_webserver: true
 php_webserver_daemon: nginx
 php_debian_pkg_managed: true
 php_debian_pkg_name:
-  - 'deb http://packages.dotdeb.org jessie all'
-php_debian_pkg_key: 'https://www.dotdeb.org/dotdeb.gpg'
+  - 'deb https://packages.sury.org/php/ stretch main'
+php_debian_pkg_key: 'https://packages.sury.org/php/apt.gpg'
 php_date_timezone: "Europe/Paris"
-php_version_to_install: "7.0"
+php_version_to_install: "7.1"
 
 # PHP Configuration
 # Average size of a process: ps -ylC php7.0-fpm --sort:rss (result in KB, value below in MB)
