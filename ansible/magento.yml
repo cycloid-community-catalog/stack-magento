@@ -15,7 +15,8 @@
     magento_install_options: "{{ lookup('template', 'install_options.j2') }}"
 
   pre_tasks:
-    - user:
+    - name: Create ansistrano required user
+      user:
         name: "{{ ansistrano_user }}"
         home: "/home/{{ ansistrano_user }}"
   roles:
