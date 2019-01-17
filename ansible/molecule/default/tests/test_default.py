@@ -13,6 +13,7 @@ def test_magento_env(host):
     assert f.user == 'magento'
     assert f.group == 'magento'
 
+
 def test_services_running(host):
     nginx = host.process.filter(user='www-data', comm='nginx')
     fpm = host.process.filter(user='magento', comm='php-fpm7.0')
@@ -20,10 +21,12 @@ def test_services_running(host):
     assert len(nginx) >= 1
     assert len(fpm) >= 1
 
+
 def test_curl_homepage(host):
     f = host.run("curl -s  localhost | grep '<title>Home page</title>'")
 
     assert f.rc == 0
+
 
 def test_magento_crons(host):
 
