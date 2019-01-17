@@ -6,8 +6,8 @@
     name: "{{item}}"
     state: latest
   with_items:
-   - python-setuptools
-   - cron
+    - python-setuptools
+    - cron
 
 - name: Install pip
   easy_install:
@@ -18,5 +18,5 @@
   pip:
     name: "{{item}}"
   with_items:
-   - boto
-   - boto3
+    - boto
+    - boto3

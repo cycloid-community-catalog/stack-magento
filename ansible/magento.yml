@@ -15,9 +15,9 @@
     magento_install_options: "{{ lookup('template', 'install_options.j2') }}"
 
   pre_tasks:
-  - user:
-      name: "{{ ansistrano_user }}"
-      home: "/home/{{ ansistrano_user }}"
+    - user:
+        name: "{{ ansistrano_user }}"
+        home: "/home/{{ ansistrano_user }}"
   roles:
 #    - role: cycloid.customer-ssh
 #      home_directory: "/home/www/magento"

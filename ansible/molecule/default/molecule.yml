@@ -9,15 +9,15 @@ driver:
 lint:
   name: yamllint
   options:
-    config-data: "{extends: relaxed, rules: {line-length: {max: 200}}}"
+    config-data: "{extends: relaxed, rules: {line-length: {max: 300}}}"
 platforms:
   - name: mysql
     image: mysql:5
     env:
-        MYSQL_USER: magento
-        MYSQL_PASSWORD: s3cr3t
-        MYSQL_DATABASE: magento
-        MYSQL_ROOT_PASSWORD: r00t_s3cr3t
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: s3cr3t
+      MYSQL_DATABASE: magento
+      MYSQL_ROOT_PASSWORD: r00t_s3cr3t
     command: mysqld
   - name: redis
     image: redis
@@ -29,14 +29,14 @@ platforms:
     published_ports:
       - "80:80"
     groups:
-     - tag_role_front
-     - tag_project_magento
-     - tag_engine_cycloid_io
-     - tag_cycloid_io_true
-     - tag_env_test
+      - tag_role_front
+      - tag_project_magento
+      - tag_engine_cycloid_io
+      - tag_cycloid_io_true
+      - tag_env_test
     links:
-     - mysql:mysql
-     - redis:redis
+      - mysql:mysql
+      - redis:redis
 
 provisioner:
   name: ansible
