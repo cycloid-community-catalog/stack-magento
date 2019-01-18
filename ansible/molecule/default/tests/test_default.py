@@ -7,7 +7,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_magento_env(host):
-    f = host.file('/home/www/magento/magento/magento/app/etc/env.php')
+    f = host.file('/home/magento/magento/current/app/etc/env.php')
 
     assert f.exists
     assert f.user == 'magento'
@@ -16,7 +16,7 @@ def test_magento_env(host):
 
 def test_services_running(host):
     nginx = host.process.filter(user='www-data', comm='nginx')
-    fpm = host.process.filter(user='magento', comm='php-fpm7.0')
+    fpm = host.process.filter(user='magento', comm='php-fpm7.1')
 
     assert len(nginx) >= 1
     assert len(fpm) >= 1
