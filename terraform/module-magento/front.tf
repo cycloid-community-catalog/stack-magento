@@ -51,13 +51,14 @@ resource "aws_security_group_rule" "bastion_to_front_ssh" {
 ###
 
 resource "aws_instance" "front" {
-  ami                         = "${data.aws_ami.debian_jessie.id}"
+  ami = "${data.aws_ami.debian_jessie.id}"
+
   # associate_public_ip_address = false
-  count                       = "${var.front_count}"
-  iam_instance_profile        = "${aws_iam_instance_profile.front_profile.name}"
-  instance_type               = "${var.front_type}"
-  key_name                    = "${var.keypair_name}"
-  ebs_optimized               = "${var.front_ebs_optimized}"
+  count                = "${var.front_count}"
+  iam_instance_profile = "${aws_iam_instance_profile.front_profile.name}"
+  instance_type        = "${var.front_type}"
+  key_name             = "${var.keypair_name}"
+  ebs_optimized        = "${var.front_ebs_optimized}"
 
   vpc_security_group_ids = ["${compact(list(
     "${var.bastion_sg_allow}",
@@ -70,6 +71,14 @@ resource "aws_instance" "front" {
     volume_size           = "${var.front_disk_size}"
     volume_type           = "${var.front_disk_type}"
     delete_on_termination = true
+  }
+
+  volume_tags {
+    cycloid.io = "true"
+    Name       = "${var.project}-front${count.index}-${lookup(var.short_region, var.aws_region)}-${var.env}"
+    env        = "${var.env}"
+    project    = "${var.project}"
+    role       = "front"
   }
 
   tags {
@@ -193,5 +202,4 @@ resource "aws_cloudwatch_metric_alarm" "recover-front" {
   period                    = "60"
   statistic                 = "Average"
   threshold                 = "0"
-
 }
