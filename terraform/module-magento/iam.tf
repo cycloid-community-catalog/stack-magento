@@ -1,6 +1,7 @@
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
+
     actions = [
       "sts:AssumeRole",
     ]
@@ -53,20 +54,23 @@ resource "aws_iam_policy_attachment" "ec2-tag-describe" {
 # Logs
 data "aws_iam_policy_document" "push-logs" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
+
     actions = [
       "logs:UntagLogGroup",
       "logs:TagLogGroup",
       "logs:PutRetentionPolicy",
       "logs:PutLogEvents",
       "logs:DeleteRetentionPolicy",
-      "logs:CreateLogStream"
+      "logs:CreateLogStream",
     ]
+
     resources = ["arn:aws:logs:*:*:log-group:${var.project}_${var.env}:*"]
   }
 
   statement {
-    effect  = "Allow"
+    effect = "Allow"
+
     actions = [
       "logs:ListTagsLogGroup",
       "logs:DescribeSubscriptionFilters",
@@ -77,8 +81,9 @@ data "aws_iam_policy_document" "push-logs" {
       "logs:DescribeResourcePolicies",
       "logs:DescribeExportTasks",
       "logs:DescribeDestinations",
-      "logs:CreateLogGroup"
+      "logs:CreateLogGroup",
     ]
+
     resources = ["*"]
   }
 }

@@ -67,19 +67,19 @@ resources:
     vars:
       access_key: ((aws_access_key))
       secret_key: ((aws_secret_key))
-      customer: ((customer))
       env: ((env))
       project: ((project))
+      customer: ((customer))
+      aws_region: ((aws_default_region))
     env:
       AWS_ACCESS_KEY_ID: ((aws_access_key))
-      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
       AWS_DEFAULT_REGION: ((aws_default_region))
+      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
 
 - name: magento-release
   type: s3
   source:
     bucket: ((magento_deploy_bucket_name))
-    #regexp: magento/((env))/magento-((env)).tar.gz
     versioned_file: ((magento_deploy_bucket_object_path))
     private: true
     region_name: ((aws_default_region))
@@ -90,7 +90,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
-    branch: master
+    branch: ((stack_git_branch))
     check_every: 2m
     paths:
       - ansible/*
@@ -98,18 +98,18 @@ resources:
 - name: catalog-config-ansible
   type: git
   source:
-    uri: ((magento_config_git_repository))
-    branch: ((magento_config_git_branch))
+    uri: ((config_git_repository))
+    branch: ((config_git_branch))
     check_every: 2m
-    private_key: ((magento_config_git_private_key))
+    private_key: ((config_git_private_key))
     paths:
-      - ((project))/ansible/*
+      - ((config_ansible_path))/*
 
 - name: stack-magento-terraform
   type: git
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
-    branch: master
+    branch: ((magento_stack_git_branch))
     check_every: 2m
     paths:
       - terraform/*
@@ -117,20 +117,20 @@ resources:
 - name: catalog-config-terraform
   type: git
   source:
-    uri: ((magento_config_git_repository))
-    branch: ((magento_config_git_branch))
+    uri: ((config_git_repository))
+    branch: ((config_git_branch))
     check_every: 2m
-    private_key: ((magento_config_git_private_key))
+    private_key: ((config_git_private_key))
     paths:
-      - ((project))/terraform/*
+      - ((config_terraform_path))/*
 
 - name: magento-code
   type: git
   source:
-    uri: ((magento_git_repository))
-    branch: ((magento_git_branch))
+    uri: ((lemp_git_repository))
+    branch: ((lemp_git_branch))
     check_every: 2m
-    private_key: ((magento_git_private_key))
+    private_key: ((lemp_git_private_key))
 
 
 jobs:
@@ -153,7 +153,7 @@ jobs:
             - name: stack-magento-terraform
               path: "stack"
           params:
-            CONFIG_PATH: ((project))/terraform/((env))
+            CONFIG_PATH: ((config_terraform_path))
             STACK_PATH: terraform
 
         - put: terraform-magento-((env))
@@ -189,7 +189,7 @@ jobs:
             - name: stack-magento-terraform
               path: "stack"
           params:
-            CONFIG_PATH: ((project))/terraform/((env))
+            CONFIG_PATH: ((config_terraform_path))
             STACK_PATH: terraform
 
         - put: terraform-magento-((env))
@@ -216,7 +216,7 @@ jobs:
               - name: stack-magento-terraform
                 path: "stack"
             params:
-              CONFIG_PATH: ((project))/terraform/((env))
+              CONFIG_PATH: ((config_terraform_path))
               STACK_PATH: terraform
 
           - put: terraform-magento-((env))
@@ -261,7 +261,7 @@ jobs:
 
               echo "# create the archive release"
               cd ${DIR}
-              tar zcf ${PWD}/release/magento-release.tar.gz code
+              tar zcf --exclude code/.git ${PWD}/release/magento-release.tar.gz code
           # params:
           inputs:
           - name: magento-code
@@ -336,26 +336,29 @@ jobs:
           - name: terraform-magento-((env))
             path: "terraform"
         params:
-          CONFIG_PATH: ((project))/ansible
+          CONFIG_PATH: ((config_ansible_path))
           STACK_PATH: ansible
 
       - task: run-ansible
         <<: *run-ansible-from-bastion
         params:
-          AWS_ACCESS_KEY_ID: ((aws_access_key))
-          AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
-          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
-          MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
           BASTION_URL: ((bastion_url))
           BASTION_PRIVATE_KEY: ((bastion_private_key_pair))
           ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: magento.yml
+          AWS_DEFAULT_REGION: ((aws_default_region))
+          AWS_ACCESS_KEY_ID: ((aws_access_key))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
+          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
+          MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
+          FORCE_ANSIBLE_GALAXY: false
           EXTRA_VARS:
             customer: ((customer))
             project: ((project))
             env: ((env))
+            default_ec2_region: ((aws_default_region))
 
 
   - name: app-deploy-front
@@ -396,26 +399,29 @@ jobs:
           - name: terraform-magento-((env))
             path: "terraform"
         params:
-          CONFIG_PATH: ((project))/ansible
+          CONFIG_PATH: ((config_ansible_path))
           STACK_PATH: ansible
 
       - task: run-ansible
         <<: *run-ansible-from-bastion
         params:
-          AWS_ACCESS_KEY_ID: ((aws_access_key))
-          AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
-          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
-          MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
           BASTION_URL: ((bastion_url))
           BASTION_PRIVATE_KEY: ((bastion_private_key_pair))
           ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: magento.yml
+          AWS_DEFAULT_REGION: ((aws_default_region))
+          AWS_ACCESS_KEY_ID: ((aws_access_key))
+          AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+          MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
+          MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
+          MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
+          FORCE_ANSIBLE_GALAXY: false
           EXTRA_VARS:
             customer: ((customer))
             project: ((project))
             env: ((env))
+            default_ec2_region: ((aws_default_region))
           TAGS:
             - deploy
 
