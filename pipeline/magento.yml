@@ -55,7 +55,7 @@ resource_types:
 
 resources:
 
-- name: terraform-magento-((env))
+- name: tfstate
   type: terraform
   source:
     storage:
@@ -76,7 +76,7 @@ resources:
       AWS_DEFAULT_REGION: ((aws_default_region))
       AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
 
-- name: magento-release
+- name: s3_magento-release
   type: s3
   source:
     bucket: ((magento_deploy_bucket_name))
@@ -86,7 +86,7 @@ resources:
     access_key_id: ((aws_access_key))
     secret_access_key: ((aws_secret_key))
 
-- name: stack-magento-ansible
+- name: git_stack-ansible
   type: git
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
@@ -95,7 +95,7 @@ resources:
     paths:
       - ansible/*
 
-- name: catalog-config-ansible
+- name: git_config-ansible
   type: git
   source:
     uri: ((config_git_repository))
@@ -105,16 +105,16 @@ resources:
     paths:
       - ((config_ansible_path))/*
 
-- name: stack-magento-terraform
+- name: git_stack-terraform
   type: git
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
-    branch: ((magento_stack_git_branch))
+    branch: ((stack_git_branch))
     check_every: 2m
     paths:
       - terraform/*
 
-- name: catalog-config-terraform
+- name: git_config-terraform
   type: git
   source:
     uri: ((config_git_repository))
@@ -124,7 +124,7 @@ resources:
     paths:
       - ((config_terraform_path))/*
 
-- name: magento-code
+- name: git_magento-code
   type: git
   source:
     uri: ((lemp_git_repository))
@@ -139,24 +139,24 @@ jobs:
     build_logs_to_retain: 10
     plan:
       - do:
-        - get: stack-magento-terraform
+        - get: git_stack-terraform
           trigger: true
-        - get: catalog-config-terraform
+        - get: git_config-terraform
           trigger: true
 
         - task: merge-stack-and-config
           config:
             <<: *merge-stack-and-config
             inputs:
-            - name: catalog-config-terraform
+            - name: git_config-terraform
               path: "config"
-            - name: stack-magento-terraform
+            - name: git_stack-terraform
               path: "stack"
           params:
             CONFIG_PATH: ((config_terraform_path))
             STACK_PATH: terraform
 
-        - put: terraform-magento-((env))
+        - put: tfstate
           params:
             env_name: magento-((env))
             plan_only: true
@@ -167,15 +167,15 @@ jobs:
     plan:
       - do:
         # Get the PR on the project #
-        - get: stack-magento-terraform
+        - get: git_stack-terraform
           trigger: false
           passed:
             - terraform-plan
-        - get: catalog-config-terraform
+        - get: git_config-terraform
           trigger: false
           passed:
             - terraform-plan
-        - get: terraform-magento-((env))
+        - get: tfstate
           trigger: false
           passed:
             - terraform-plan
@@ -184,15 +184,15 @@ jobs:
           config:
             <<: *merge-stack-and-config
             inputs:
-            - name: catalog-config-terraform
+            - name: git_config-terraform
               path: "config"
-            - name: stack-magento-terraform
+            - name: git_stack-terraform
               path: "stack"
           params:
             CONFIG_PATH: ((config_terraform_path))
             STACK_PATH: terraform
 
-        - put: terraform-magento-((env))
+        - put: tfstate
           params:
             env_name: magento-((env))
             run_plan: true
@@ -203,23 +203,23 @@ jobs:
     build_logs_to_retain: 10
     plan:
       - do:
-          - get: stack-magento-terraform
+          - get: git_stack-terraform
             trigger: false
-          - get: catalog-config-terraform
+          - get: git_config-terraform
             trigger: false
           - task: merge-stack-and-config
             config:
               <<: *merge-stack-and-config
               inputs:
-              - name: catalog-config-terraform
+              - name: git_config-terraform
                 path: "config"
-              - name: stack-magento-terraform
+              - name: git_stack-terraform
                 path: "stack"
             params:
               CONFIG_PATH: ((config_terraform_path))
               STACK_PATH: terraform
 
-          - put: terraform-magento-((env))
+          - put: tfstate
             params:
               action: destroy
               env_name: magento-((env))
@@ -232,7 +232,7 @@ jobs:
     build_logs_to_retain: 10
     plan:
     - do:
-      - get: magento-code
+      - get: git_magento-code
         trigger: true
 
       - task: build-release
@@ -264,12 +264,12 @@ jobs:
               tar zcf --exclude code/.git ${PWD}/release/magento-release.tar.gz code
           # params:
           inputs:
-          - name: magento-code
+          - name: git_magento-code
             path: code
           outputs:
           - name: release
             path: "release"
-      - put: magento-release
+      - put: s3_magento-release
         params:
           acl: private
           file: release/magento-release.tar.gz
@@ -279,10 +279,10 @@ jobs:
     build_logs_to_retain: 10
     plan:
     - do:
-      - get: magento-release
+      - get: s3_magento-release
         trigger: true
         passed: [build]
-      - get: magento-code
+      - get: git_magento-code
         passed: [build]
         trigger: false
 
@@ -307,21 +307,21 @@ jobs:
     plan:
     - do:
 
-      - get: terraform-magento-((env))
+      - get: tfstate
         trigger: true
         passed:
           - terraform-apply
 
-      - get: stack-magento-ansible
+      - get: git_stack-ansible
         trigger: true
-      - get: catalog-config-ansible
+      - get: git_config-ansible
         trigger: true
 
-      - get: magento-release
+      - get: s3_app-release
         trigger: false
         passed: [unittests]
 
-      - get: magento-code
+      - get: git_app-code
         passed: [unittests]
         trigger: false
 
@@ -329,11 +329,11 @@ jobs:
         config:
           <<: *merge-stack-and-config
           inputs:
-          - name: catalog-config-ansible
+          - name: git_config-ansible
             path: "config"
-          - name: stack-magento-ansible
+          - name: git_stack-ansible
             path: "stack"
-          - name: terraform-magento-((env))
+          - name: tfstate
             path: "terraform"
         params:
           CONFIG_PATH: ((config_ansible_path))
@@ -366,25 +366,25 @@ jobs:
     plan:
     - do:
 
-      - get: stack-magento-ansible
+      - get: git_stack-ansible
         trigger: false
         passed:
           - full-deploy-front
 
-      - get: catalog-config-ansible
+      - get: git_config-ansible
         trigger: false
         passed:
           - full-deploy-front
 
-      - get: terraform-magento-((env))
+      - get: tfstate
         trigger: false
         passed:
           - full-deploy-front
 
-      - get: magento-release
+      - get: s3_magento-release
         trigger: true
         passed: [unittests]
-      - get: magento-code
+      - get: git_magento-code
         trigger: false
         passed: [unittests]
 
@@ -392,11 +392,11 @@ jobs:
         config:
           <<: *merge-stack-and-config
           inputs:
-          - name: catalog-config-ansible
+          - name: git_config-ansible
             path: "config"
-          - name: stack-magento-ansible
+          - name: git_stack-ansible
             path: "stack"
-          - name: terraform-magento-((env))
+          - name: tfstate
             path: "terraform"
         params:
           CONFIG_PATH: ((config_ansible_path))
@@ -430,10 +430,10 @@ jobs:
     build_logs_to_retain: 10
     plan:
     - do:
-      - get: magento-release
+      - get: s3_magento-release
         trigger: true
         passed: [app-deploy-front]
-      - get: magento-code
+      - get: git_magento-code
         passed: [app-deploy-front]
         trigger: false
 
