@@ -22,7 +22,7 @@ variable "short_region" {
 }
 
 variable "zones" {
-  type = "list"
+  type    = "list"
   default = []
 }
 
@@ -31,12 +31,12 @@ variable "keypair_name" {
 }
 
 variable "private_subnets_ids" {
-  type = "list"
+  type    = "list"
   default = [""]
 }
 
 variable "public_subnets_ids" {
-    type = "list"
+  type = "list"
 }
 
 # variable "private_zone_id" {}
@@ -131,6 +131,10 @@ variable "front_ebs_optimized" {
 
 variable "front_count" {
   default = 1
+}
+
+variable "debian_ami_name" {
+  default = "debian-stretch-*"
 }
 
 ###

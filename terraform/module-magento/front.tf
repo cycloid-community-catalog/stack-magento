@@ -51,7 +51,7 @@ resource "aws_security_group_rule" "bastion_to_front_ssh" {
 ###
 
 resource "aws_instance" "front" {
-  ami = "${data.aws_ami.debian_jessie.id}"
+  ami = "${data.aws_ami.debian.id}"
 
   # associate_public_ip_address = false
   count                = "${var.front_count}"

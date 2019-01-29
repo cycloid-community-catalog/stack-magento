@@ -16,8 +16,6 @@ module "magento" {
 
   rds_password             = "${var.rds_password}"
 
-  # project = "magento"
-
   # SSH keypair name to use to deploy ec2 instances
   # keypair_name = "demo"
 
@@ -45,6 +43,6 @@ module "magento" {
   # front_count           = "1"
   # front_disk_size       = "60"
   # front_disk_type       = "gp2"
-  # front_type            = "t2.small"
+  # front_type            = "t3.small"
   # front_ebs_optimized   = "false"
 }
