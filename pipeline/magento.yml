@@ -263,7 +263,7 @@ jobs:
 
               echo "# create the archive release"
               cd ${DIR}
-              tar zcf --exclude code/.git ${PWD}/release/magento-release.tar.gz code
+              tar --exclude code/.git -zcf ${PWD}/release/magento-release.tar.gz code
           # params:
           inputs:
           - name: git_magento-code
