@@ -1,3 +1,4 @@
+# YAML anchors
 shared:
 
   # Task : sync and merge with rsync 2 rep. Used to merge stack and config
@@ -22,7 +23,7 @@ shared:
         type: docker-image
         source:
           repository: cycloid/cycloid-toolkit
-          tag: latest
+          tag: v2.7
       run:
         path: /usr/bin/ansible-runner
       caches:
@@ -32,7 +33,6 @@ shared:
         path: ansible-playbook
 
 groups:
-
 - name: overview
   jobs:
   - build
@@ -47,14 +47,12 @@ groups:
   - terraform-destroy
 
 resource_types:
-
 - name: terraform
   type: docker-image
   source:
     repository: ljfranklin/terraform-resource
 
 resources:
-
 - name: tfstate
   type: terraform
   source:
@@ -95,6 +93,7 @@ resources:
     paths:
       - ansible/*
 
+# The Ansible config (will be merged with the stack)
 - name: git_config-ansible
   type: git
   source:
@@ -103,8 +102,10 @@ resources:
     check_every: 2m
     private_key: ((config_git_private_key))
     paths:
-      - ((config_ansible_path))/*
+      - ((config_ansible_path))/((env))-*
 
+
+# The Terraform stack (will be merged with the config)
 - name: git_stack-terraform
   type: git
   source:
@@ -114,6 +115,7 @@ resources:
     paths:
       - terraform/*
 
+# The Terraform config (will be merged with the stack)
 - name: git_config-terraform
   type: git
   source:
@@ -158,7 +160,7 @@ jobs:
 
         - put: tfstate
           params:
-            env_name: magento-((env))
+            env_name: ((project))-((env))
             plan_only: true
             terraform_source: merged-stack/
 
@@ -194,7 +196,7 @@ jobs:
 
         - put: tfstate
           params:
-            env_name: magento-((env))
+            env_name: ((project))-((env))
             run_plan: true
             terraform_source: merged-stack/
 
@@ -222,7 +224,7 @@ jobs:
           - put: tfstate
             params:
               action: destroy
-              env_name: magento-((env))
+              env_name: ((project))-((env))
               terraform_source: merged-stack/
             get_params:
               action: destroy
