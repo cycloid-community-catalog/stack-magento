@@ -86,20 +86,20 @@ resources:
 
 - name: git_stack-ansible
   type: git
+  check_every: 2m
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
     branch: ((stack_git_branch))
-    check_every: 2m
     paths:
       - ansible/*
 
 # The Ansible config (will be merged with the stack)
 - name: git_config-ansible
   type: git
+  check_every: 2m
   source:
     uri: ((config_git_repository))
     branch: ((config_git_branch))
-    check_every: 2m
     private_key: ((config_git_private_key))
     paths:
       - ((config_ansible_path))/((env))-*
@@ -108,30 +108,30 @@ resources:
 # The Terraform stack (will be merged with the config)
 - name: git_stack-terraform
   type: git
+  check_every: 2m
   source:
     uri: https://github.com/cycloid-community-catalog/stack-magento
     branch: ((stack_git_branch))
-    check_every: 2m
     paths:
       - terraform/*
 
 # The Terraform config (will be merged with the stack)
 - name: git_config-terraform
   type: git
+  check_every: 2m
   source:
     uri: ((config_git_repository))
     branch: ((config_git_branch))
-    check_every: 2m
     private_key: ((config_git_private_key))
     paths:
       - ((config_terraform_path))/*
 
 - name: git_magento-code
   type: git
+  check_every: 2m
   source:
     uri: ((lemp_git_repository))
     branch: ((lemp_git_branch))
-    check_every: 2m
     private_key: ((lemp_git_private_key))
 
 
