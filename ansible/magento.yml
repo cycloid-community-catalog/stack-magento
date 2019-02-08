@@ -3,13 +3,13 @@
 #
 # Front
 #
-- hosts: tag_role_front:&tag_project_magento:&tag_cycloid_io_true:&tag_env_{{ env }}
+- hosts: tag_role_front:&tag_project_{{ project }}:&tag_cycloid_io_true:&tag_env_{{ env }}
   become: yes
   serial: 50%
 
   vars_files:
     - "environments/default_front.yml"
-    - ["environments/{{env}}-front.yml", "{{env}}-front.yml"]
+    - ["environments/{{env}}-front.yml", "{{env}}-front.yml", "environments/empty.yml"]
   vars:
     # See https://github.com/votum/ansible-role-magento2
     magento_install_options: "{{ lookup('template', 'install_options.j2') }}"
