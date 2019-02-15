@@ -50,7 +50,7 @@ provisioner:
     #vault-password-file: ../../.vault-password
     extra-vars:
       env: test
-      project: test
+      project: magento
     #skip-tags: deploy
     #vvv: "True"
 
