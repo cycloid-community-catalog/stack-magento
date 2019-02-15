@@ -26,10 +26,6 @@ output "rds_username" {
   value = "${module.magento.rds_username}"
 }
 
-output "rds_password" {
-  value = "${var.rds_password}"
-}
-
 output "rds_database" {
   value = "${module.magento.rds_database}"
 }
