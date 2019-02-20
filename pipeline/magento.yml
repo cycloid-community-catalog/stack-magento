@@ -355,7 +355,7 @@ jobs:
           MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
           MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
           MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
-          FORCE_ANSIBLE_GALAXY: false
+          ANSIBLE_FORCE_GALAXY: false
           EXTRA_VARS:
             customer: ((customer))
             project: ((project))
@@ -418,7 +418,7 @@ jobs:
           MAGENTO_DEPLOY_BUCKET_NAME: ((magento_deploy_bucket_name))
           MAGENTO_DEPLOY_BUCKET_OBJECT_PATH: ((magento_deploy_bucket_object_path))
           MAGENTO_DEPLOY_BUCKET_REGION: ((aws_default_region))
-          FORCE_ANSIBLE_GALAXY: false
+          ANSIBLE_FORCE_GALAXY: false
           EXTRA_VARS:
             customer: ((customer))
             project: ((project))
