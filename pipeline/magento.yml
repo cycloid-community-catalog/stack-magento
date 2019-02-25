@@ -319,11 +319,11 @@ jobs:
       - get: git_config-ansible
         trigger: true
 
-      - get: s3_app-release
+      - get: s3_magento-release
         trigger: false
         passed: [unittests]
 
-      - get: git_app-code
+      - get: git_magento-code
         passed: [unittests]
         trigger: false
 
