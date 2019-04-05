@@ -48,8 +48,9 @@ resource "aws_db_instance" "magento" {
   skip_final_snapshot       = "${var.rds_skip_final_snapshot}"
   copy_tags_to_snapshot     = true
 
-  parameter_group_name   = "${var.rds_parameters}"
-  db_subnet_group_name   = "${var.rds_subnet}"
+  parameter_group_name = "${var.rds_parameters}"
+  db_subnet_group_name = "${var.rds_subnet != "" ? var.rds_subnet : aws_db_subnet_group.rds-subnet.id}"
+
   vpc_security_group_ids = ["${aws_security_group.rds.id}"]
 
   tags {
