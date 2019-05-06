@@ -21,7 +21,7 @@ This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load ba
 In order to run this task, couple elements are required within the infrastructure:
 
   * Having a VPC with private & public subnets [here](https://docs.aws.amazon.com/vpc/latest/userguide/getting-started-ipv4.html#getting-started-create-vpc)
-  * Having a bastion server to run Ansible like described [Here](https://docs.cycloid.io/advanced-guide/ansible-integration.html#standard-usage)
+  * Having a bastion server to run Ansible like described [here](https://docs.cycloid.io/advanced-guide/ansible-integration.html#standard-usage)
   * Having an S3 bucket to store Terraform remote states [Here](https://docs.aws.amazon.com/quickstarts/latest/s3backup/step-1-create-bucket.html)
   * Having an S3 bucket for Magento code **WITH** versioning enable [here](https://docs.aws.amazon.com/quickstarts/latest/s3backup/step-1-create-bucket.html)
 
