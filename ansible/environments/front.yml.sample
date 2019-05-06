@@ -8,7 +8,7 @@
 #+ Magento frontName to use in env.php.
 
 #. magento_admin_firstname: admin
-#+ Magento install option admin-firstname
+#+ Magento install option admin-firstname.
 
 #. magento_admin_lastname: admin
 #+ Magento install option admin-lastname
