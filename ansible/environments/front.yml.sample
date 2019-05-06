@@ -14,7 +14,7 @@
 #+ Magento install option admin-lastname.
 
 #. magento_admin_email: root@localhost.local
-#+ Magento install option admin-email
+#+ Magento install option admin-email.
 
 #. magento_admin_user: admin
 #+ Magento install option admin-user
