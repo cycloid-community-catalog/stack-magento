@@ -29,7 +29,7 @@ terraform_storage_bucket_path: ($ project $)/($ environment $)
 #
 
 #. magento_deploy_bucket_name (required): ($ project $)-deploy
-#+ AWS S3 bucket name in which store the builded code of magento.
+#+ AWS S3 bucket name in which we will store your magento built code.
 magento_deploy_bucket_name: ($ project $)-deploy
 
 #. magento_deploy_bucket_object_path (required): /catalog-magento/($ environment $)/magento.tar.gz
