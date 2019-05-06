@@ -30,7 +30,7 @@ In order to run this task, couple elements are required within the infrastructur
 ## Pipeline
 
 > **Note** The pipeline contains a manual approval between `terraform plan` and `terraform apply`.
-> That means if you trigger a terraform plan, to apply it, you have to go on terraform apply job
+> That means if you trigger a `terraform plan`, to apply it, you have to go on `terraform apply` job
 > and click on the `+` button to trigger it.
 
 <p align="center">
