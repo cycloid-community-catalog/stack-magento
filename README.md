@@ -23,7 +23,7 @@ In order to run this task, couple elements are required within the infrastructur
   * Having a VPC with private & public subnets [Here](https://docs.aws.amazon.com/vpc/latest/userguide/getting-started-ipv4.html#getting-started-create-vpc)
   * Having a bastion server to run Ansible like described [Here](https://docs.cycloid.io/advanced-guide/ansible-integration.html#standard-usage)
   * Having an S3 bucket to store Terraform remote states [Here](https://docs.aws.amazon.com/quickstarts/latest/s3backup/step-1-create-bucket.html)
-  * Having an S3 bucket for magento code **WITH** versioning enable [Here](https://docs.aws.amazon.com/quickstarts/latest/s3backup/step-1-create-bucket.html)
+  * Having an S3 bucket for Magento code **WITH** versioning enable [here](https://docs.aws.amazon.com/quickstarts/latest/s3backup/step-1-create-bucket.html)
 
 # Details
 
