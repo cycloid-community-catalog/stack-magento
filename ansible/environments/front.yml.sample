@@ -17,7 +17,7 @@
 #+ Magento install option admin-email.
 
 #. magento_admin_user: admin
-#+ Magento install option admin-user
+#+ Magento install option admin-user.
 
 #. magento_admin_password: 4Bigs3cr3t
 #+ Magento install option admin-password
