@@ -14,7 +14,7 @@ This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load ba
   * **ELB**: Amazon Elastic Load Balancing
   * **EC2** Amazon Elastic Compute Cloud
   * **RDS** Amazon Relational Database Service
-  * **Cache** Amazon Elasticache Redis
+  * **Cache** Amazon ElastiCache Redis
 
 # Requirements
 
