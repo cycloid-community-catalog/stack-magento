@@ -30,7 +30,7 @@ resource "aws_elasticache_cluster" "redis" {
   num_cache_nodes      = "${var.elasticache_nodes}"
   parameter_group_name = "${var.elasticache_parameter_group_name}"
   security_group_ids   = ["${aws_security_group.redis.id}"]
-  subnet_group_name    = "${var.cache_subnet}"
+  subnet_group_name    = "${var.cache_subnet != "" ? var.cache_subnet : aws_elasticache_subnet_group.cache-subnet.name}"
   apply_immediately    = true
   maintenance_window   = "tue:06:00-tue:07:00"
 
