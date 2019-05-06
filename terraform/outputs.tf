@@ -5,7 +5,7 @@ output "elb_front_dns_name" {
 
 output "elb_front_zone_id" {
   value       = "${module.magento.elb_front_zone_id}"
-  description = "Zone ID of the front elb."
+  description = "Zone ID of the front ELB."
 }
 
 output "front_private_ips" {
