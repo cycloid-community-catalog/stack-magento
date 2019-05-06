@@ -39,7 +39,7 @@ In order to run this task, couple elements are required within the infrastructur
 
 **Jobs description**
 
-  * `build`: Runs the appropriate php/composer commands to build the magento code.
+  * `build`: Runs the appropriate `php/composer` commands to build the Magento code.
   * `unittest`: Dummy job meant to eventually be replaced by proper tests or removed.
   * `full-deploy-front`: Ansible job that will fully install the EC2 instances, users, config, etc.
   * `app-deploy-front`: Ansible job meant to only deploy the Magento code in case of deployment.
