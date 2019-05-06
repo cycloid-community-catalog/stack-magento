@@ -5,7 +5,7 @@
 #
 
 #. magento_backend_frontname: admin
-#+ Magento frontName to use in env.php
+#+ Magento frontName to use in env.php.
 
 #. magento_admin_firstname: admin
 #+ Magento install option admin-firstname
