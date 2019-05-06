@@ -15,7 +15,7 @@ output "front_private_ips" {
 
 output "cache_address" {
   value       = "${module.magento.cache_address}"
-  description = "Address of the elasticache."
+  description = "Address of the ElastiCache."
 }
 
 output "rds_address" {
