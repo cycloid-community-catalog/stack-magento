@@ -23,7 +23,7 @@ shared:
         type: docker-image
         source:
           repository: cycloid/cycloid-toolkit
-          tag: v2.7
+          tag: v2.4
       run:
         path: /usr/bin/ansible-runner
       caches:
@@ -260,7 +260,7 @@ jobs:
 
               php bin/magento module:enable --all
 
-              php bin/magento setup:di:compile -v
+              php -d memory_limit=2048M bin/magento setup:di:compile -v
 
               echo "# create the archive release"
               cd ${DIR}

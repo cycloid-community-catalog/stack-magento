@@ -102,6 +102,10 @@ module "magento" {
   #+ AWS elasticache engine.
   # elasticache_engine               = "redis"
 
+  #. elasticache_engine_version (optional): 3.2.10
+  #+ AWS elasticache engine version.
+  # elasticache_engine_version               = "3.2.10"
+
   #. elasticache_engine (optional): 6379
   #+ AWS elasticache binding port.
   # elasticache_port                 = "6379"

@@ -155,6 +155,10 @@ variable "elasticache_engine" {
   default = "redis"
 }
 
+variable "elasticache_engine_version" {
+  default = "3.2.10"
+}
+
 variable "elasticache_parameter_group_name" {
   default = "default.redis3.2"
 }

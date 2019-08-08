@@ -25,6 +25,7 @@ resource "aws_security_group" "redis" {
 resource "aws_elasticache_cluster" "redis" {
   cluster_id           = "${var.project}-${count.index}-${var.env}"
   engine               = "${var.elasticache_engine}"
+  engine_version       = "${var.elasticache_engine_version}"
   node_type            = "${var.elasticache_type}"
   port                 = "${var.elasticache_port}"
   num_cache_nodes      = "${var.elasticache_nodes}"
@@ -43,7 +44,7 @@ resource "aws_elasticache_cluster" "redis" {
 }
 
 resource "aws_elasticache_subnet_group" "cache-subnet" {
-  name        = "engine-cycloid.io_subnet-cache-${var.vpc_id}"
+  name        = "engine-cycloidio-subnet-cache-${var.vpc_id}"
   count       = "${var.cache_subnet != "" ? 0 : 1}"
   description = "redis cache subnet for ${var.vpc_id}"
   subnet_ids  = ["${var.private_subnets_ids}"]
