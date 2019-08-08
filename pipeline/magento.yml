@@ -260,7 +260,7 @@ jobs:
 
               php bin/magento module:enable --all
 
-              php bin/magento setup:di:compile -v
+              php -d memory_limit=2048M bin/magento setup:di:compile -v
 
               echo "# create the archive release"
               cd ${DIR}
