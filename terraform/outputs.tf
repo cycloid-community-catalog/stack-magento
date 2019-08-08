@@ -35,6 +35,7 @@ output "rds_username" {
 
 output "rds_password" {
   value = "${var.rds_password}"
+  sensitive   = true
 }
 
 output "rds_database" {
