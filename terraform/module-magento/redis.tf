@@ -43,7 +43,7 @@ resource "aws_elasticache_cluster" "redis" {
 }
 
 resource "aws_elasticache_subnet_group" "cache-subnet" {
-  name        = "engine-cycloid.io_subnet-cache-${var.vpc_id}"
+  name        = "engine-cycloidio-subnet-cache-${var.vpc_id}"
   count       = "${var.cache_subnet != "" ? 0 : 1}"
   description = "redis cache subnet for ${var.vpc_id}"
   subnet_ids  = ["${var.private_subnets_ids}"]
