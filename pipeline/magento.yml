@@ -131,9 +131,9 @@ resources:
   type: git
   check_every: 2m
   source:
-    uri: ((lemp_git_repository))
-    branch: ((lemp_git_branch))
-    private_key: ((lemp_git_private_key))
+    uri: ((magento_git_repository))
+    branch: ((magento_git_branch))
+    private_key: ((magento_git_private_key))
 
 
 jobs:
