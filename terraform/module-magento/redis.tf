@@ -25,6 +25,7 @@ resource "aws_security_group" "redis" {
 resource "aws_elasticache_cluster" "redis" {
   cluster_id           = "${var.project}-${count.index}-${var.env}"
   engine               = "${var.elasticache_engine}"
+  engine_version       = "${var.elasticache_engine_version}"
   node_type            = "${var.elasticache_type}"
   port                 = "${var.elasticache_port}"
   num_cache_nodes      = "${var.elasticache_nodes}"
