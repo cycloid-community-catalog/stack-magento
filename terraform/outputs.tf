@@ -33,6 +33,10 @@ output "rds_username" {
   description = "Username of the RDS database."
 }
 
+output "rds_password" {
+  value = "${var.rds_password}"
+}
+
 output "rds_database" {
   value       = "${module.magento.rds_database}"
   description = "Database name of the RDS database."
