@@ -6,7 +6,7 @@ module "magento" {
 
   #####################################
   # Do not modify the following lines #
-  source = "module-magento"
+  source = "./module-magento"
   env     = "${var.env}"
   project = "${var.project}"
   #####################################
