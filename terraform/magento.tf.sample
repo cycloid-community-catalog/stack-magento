@@ -1,7 +1,3 @@
-variable "rds_password" {
-    default = "ChangeMePls"
-}
-
 module "magento" {
 
   #####################################
@@ -31,8 +27,7 @@ module "magento" {
   #+ Public subnet IDs to use for the public ELB load balancer.
   public_subnets_ids       = ["<public-subnets>"]
 
-
-  #. rds_password (optional): ChangeMePls
+  #. rds_password (optional): "${var.rds_password}" to get it from the pipeline.
   #+ Password of the RDS database.
   rds_password             = "${var.rds_password}"
 
@@ -53,13 +48,13 @@ module "magento" {
   #+ Enable multi AZ or not for the RDS database.
   # rds_multiaz          = false
 
-  #. rds_subnet (optional): Automatically generated from private_subnets_ids
+  #. rds_subnet_group (optional): Automatically generated from private_subnets_ids
   #+ ID of the private DB subnet group to use for RDS database.
-  # rds_subnet           = "<rds-subnet-group>"
+  # rds_subnet_group           = "<rds-subnet-group>"
 
-  #. rds_type (optional): db.t2.small
+  #. rds_type (optional): db.t3.small
   #+ AWS Instance type of the RDS database.
-  # rds_type             = "db.t2.small"
+  # rds_type             = "db.t3.small"
 
   #. rds_username (optional): magento
   #+ User name of the RDS database.
@@ -82,9 +77,9 @@ module "magento" {
   # rds_parameters       = ""
 
 
-  #. cache_subnet (optional): Automatically generated from private_subnets_ids
+  #. cache_subnet_group (optional): Automatically generated from private_subnets_ids
   #+ AWS elasticache subnet name.
-  # cache_subnet                     = "cache-subnet-id"
+  # cache_subnet_group                     = "cache-subnet-id"
 
   #. elasticache_type (optional): cache.t2.micro
   #+ AWS elasticache instance type.
@@ -94,17 +89,17 @@ module "magento" {
   #+ Number of AWS elasticache instances.
   # elasticache_nodes                = "1"
 
-  #. elasticache_parameter_group_name (optional): default.redis3.2
+  #. elasticache_parameter_group_name (optional): default.redis5.0
   #+ AWS elasticache parameter group name.
-  # elasticache_parameter_group_name = "default.redis3.2"
+  # elasticache_parameter_group_name = "default.redis5.0"
 
   #. elasticache_engine (optional): redis
   #+ AWS elasticache engine.
   # elasticache_engine               = "redis"
 
-  #. elasticache_engine_version (optional): 3.2.10
+  #. elasticache_engine_version (optional): "5.0.0"
   #+ AWS elasticache engine version.
-  # elasticache_engine_version               = "3.2.10"
+  # elasticache_engine_version               = "5.0.0"
 
   #. elasticache_engine (optional): 6379
   #+ AWS elasticache binding port.

@@ -16,13 +16,13 @@ data "aws_iam_policy_document" "assume_role" {
 # Create IAM Role for front
 resource "aws_iam_role" "front" {
   name               = "cycloid_${var.project}-${var.env}-front"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/${var.project}/"
 }
 
 resource "aws_iam_instance_profile" "front_profile" {
   name = "cycloid_profile-front-${var.project}-${var.env}"
-  role = "${aws_iam_role.front.name}"
+  role = aws_iam_role.front.name
 }
 
 # ec2 tag list policy
@@ -41,17 +41,18 @@ resource "aws_iam_policy" "ec2-tag-describe" {
   name        = "${var.env}-${var.project}-ec2-tag-describe"
   path        = "/"
   description = "EC2 tags Read only"
-  policy      = "${data.aws_iam_policy_document.ec2-tag-describe.json}"
+  policy      = data.aws_iam_policy_document.ec2-tag-describe.json
 }
 
-resource "aws_iam_policy_attachment" "ec2-tag-describe" {
-  name       = "${var.env}-${var.project}-ec2-tag-describe"
-  roles      = ["${aws_iam_role.front.name}"]
-  policy_arn = "${aws_iam_policy.ec2-tag-describe.arn}"
+resource "aws_iam_role_policy_attachment" "ec2-tag-describe" {
+  role       = aws_iam_role.front.name
+  policy_arn = aws_iam_policy.ec2-tag-describe.arn
 }
 
 #####################
 # Logs
+#####################
+
 data "aws_iam_policy_document" "push-logs" {
   statement {
     effect = "Allow"
@@ -92,11 +93,12 @@ resource "aws_iam_policy" "push-logs" {
   name        = "${var.env}-${var.project}-push-logs"
   path        = "/"
   description = "Push log to cloudwatch"
-  policy      = "${data.aws_iam_policy_document.push-logs.json}"
+  policy      = data.aws_iam_policy_document.push-logs.json
 }
 
 resource "aws_iam_policy_attachment" "push-logs" {
   name       = "${var.env}-${var.project}-push-logs"
-  roles      = ["${aws_iam_role.front.name}"]
-  policy_arn = "${aws_iam_policy.push-logs.arn}"
+  roles      = [aws_iam_role.front.name]
+  policy_arn = aws_iam_policy.push-logs.arn
 }
+

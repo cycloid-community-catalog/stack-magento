@@ -1,15 +1,9 @@
-variable "rds_password" {
-  default = "ChangeMePls"
-}
-
 module "magento" {
   #####################################
   # Do not modify the following lines #
-  source = "module-magento"
-
+  source = "./module-magento"
   env     = "${var.env}"
   project = "${var.project}"
-
   #####################################
 
   #. vpc_id (required):
@@ -27,13 +21,15 @@ module "magento" {
   #. public_subnets_ids (required, array):
   #+ Public subnet IDs to use for the public ELB load balancer.
   public_subnets_ids = ["<public-subnets>"]
-  #. rds_password (optional): ChangeMePls
+
+  #. rds_password (optional): "${var.rds_password}" to get it from the pipeline.
   #+ Password of the RDS database.
-  rds_password = "${var.rds_password}"
+  rds_password             = "${var.rds_password}"
 
   #. keypair_name (optional): demo
   #+ SSH keypair name to use to deploy ec2 instances.
   # keypair_name = "demo"
+
 
   #. rds_database (optional): magento
   #+ Name of the RDS database.
@@ -47,9 +43,9 @@ module "magento" {
   #+ Enable multi AZ or not for the RDS database.
   # rds_multiaz          = false
 
-  #. rds_subnet (optional): Automatically generated from private_subnets_ids
+  #. rds_subnet_group (optional): Automatically generated from private_subnets_ids
   #+ ID of the private DB subnet group to use for RDS database.
-  # rds_subnet           = "<rds-subnet-group>"
+  # rds_subnet_group     = "<rds-subnet-group>"
 
   #. rds_type (optional): db.t2.small
   #+ AWS Instance type of the RDS database.
@@ -75,9 +71,10 @@ module "magento" {
   #+ RDS parameters to assign to the RDS database.
   # rds_parameters       = ""
 
-  #. cache_subnet (optional): Automatically generated from private_subnets_ids
+
+  #. cache_subnet_group (optional): Automatically generated from private_subnets_ids
   #+ AWS elasticache subnet name.
-  # cache_subnet                     = "cache-subnet-id"
+  # cache_subnet_group               = "cache-subnet-id"
 
   #. elasticache_type (optional): cache.t2.micro
   #+ AWS elasticache instance type.

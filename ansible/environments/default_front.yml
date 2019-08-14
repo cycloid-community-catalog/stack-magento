@@ -3,7 +3,7 @@ magento_admin_firstname: admin
 magento_admin_lastname: admin
 magento_admin_email: root@localhost.local
 magento_admin_user: admin
-magento_admin_password: 4Bigs3cr3t
+magento_admin_password: "{{ lookup('env','MAGENTO_ADMIN_PASSWORD') | default('4Bigs3cr3t', true) }}"
 
 # FIXME The following variables are sent by the pipeline. They are some 'external' variables.
 # Should we use env var to differenciate them ?
@@ -11,29 +11,29 @@ magento_admin_password: 4Bigs3cr3t
 # Sould we put also those variables inside ? or give them as ansible -e or migrate all as env var ?
 
 # Variable given by the pipeline
-ansistrano_s3_bucket: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_NAME') | default('magento-deploy') }}"
+ansistrano_s3_bucket: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_NAME') | default('magento-deploy', true) }}"
 ansistrano_s3_object: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_OBJECT_PATH') | default('magento/{{ env }}/magento-{{ env }}.tar.gz') }}"
-ansistrano_s3_region: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_REGION') | default('eu-west-1') }}"
+ansistrano_s3_region: "{{ lookup('env','MAGENTO_DEPLOY_BUCKET_REGION') | default('eu-west-1', true) }}"
 ansistrano_s3_aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') | default(omit) }}"
 ansistrano_s3_aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') | default(omit) }}"
 
 magento_use_secure: 1
 magento_use_secure_admin: 1
 magento_use_rewrites: 1
-magento_crypt_key: "{{ 9999999999999999999999 | random | to_uuid }}"
+magento_crypt_key: "{{ 9999999999999999999999 | random | to_uuid | hash('md5') }}"
 magento_static_content_deploy:
     - fr_FR
     - en_US
 magento2_enable_crons: true
 
 # Given by the pipeline exported from terraform
-magento_base_url: "http://{{ elb_front_dns_name | default('localhost') }}"
-magento_base_url_secure: "https://{{ elb_front_dns_name | default('localhost') }}"
-magento_redis_host: "{{ cache_address | default('redis') }}"
-magento_db_host: "{{ rds_address | default('mysql') }}"
-magento_db_name: "{{ rds_database | default('magento') }}"
-magento_db_user: "{{ rds_username | default('magento') }}"
-magento_db_password: "{{ rds_password | default('s3cr3t') }}"
+magento_base_url: "http://{{ elb_front_dns_name | default('localhost', true) }}"
+magento_base_url_secure: "https://{{ elb_front_dns_name | default('localhost', true) }}"
+magento_redis_host: "{{ cache_address | default('redis', true) }}"
+magento_db_host: "{{ rds_address | default('mysql', true) }}"
+magento_db_name: "{{ rds_database | default('magento', true) }}"
+magento_db_user: "{{ rds_username | default('magento', true) }}"
+magento_db_password: "{{ rds_password | default('s3cr3t', true) }}"
 
 ansistrano_before_setup_tasks_file: config/ansistrano_before_setup.yml
 ansistrano_after_symlink_tasks_file: config/ansistrano_after_symlink_tasks.yml
