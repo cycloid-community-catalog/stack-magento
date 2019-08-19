@@ -133,6 +133,7 @@ In order to run this task, couple elements are required within the infrastructur
 |`magento_admin_email`|Magento install option admin-email.|`-`|`root@localhost.local`|`False`|
 |`magento_admin_firstname`|Magento install option admin-firstname.|`-`|`admin`|`False`|
 |`magento_admin_lastname`|Magento install option admin-lastname.|`-`|`admin`|`False`|
+|`magento_admin_password`|Magento install option admin-password.|`-`|`<provided by the pipeline>`|`False`|
 |`magento_admin_user`|Magento install option admin-user.|`-`|`admin`|`False`|
 |`magento_backend_frontname`|Magento frontName to use in env.php.|`-`|`admin`|`False`|
 
