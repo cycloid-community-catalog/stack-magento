@@ -23,7 +23,7 @@ resource "aws_security_group" "redis" {
 }
 
 resource "aws_elasticache_cluster" "redis" {
-  cluster_id           = "${var.project}-${count.index}-${var.env}"
+  cluster_id           = "${local.elasticache_cluster_id}"
   engine               = "${var.elasticache_engine}"
   engine_version       = "${var.elasticache_engine_version}"
   node_type            = "${var.elasticache_type}"

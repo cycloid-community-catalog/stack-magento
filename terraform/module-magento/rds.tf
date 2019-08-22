@@ -64,7 +64,7 @@ resource "aws_db_instance" "magento" {
 }
 
 resource "aws_db_subnet_group" "rds-subnet" {
-  name        = "engine-cycloidio_subnet-rds-${var.vpc_id}"
+  name        = "cycloid-sub-rds-${var.vpc_id}-${var.env}"
   count       = "${var.rds_subnet != "" ? 0 : 1}"
   description = "subnet-rds-${var.vpc_id}"
   subnet_ids  = ["${var.private_subnets_ids}"]

@@ -166,3 +166,11 @@ variable "elasticache_parameter_group_name" {
 variable "elasticache_port" {
   default = "6379"
 }
+
+variable "elasticache_cluster_id" {
+  default = ""
+}
+
+locals {
+  elasticache_cluster_id = "${var.elasticache_cluster_id != "" ? var.elasticache_cluster_id : replace("${var.project}${var.env}", "/[[:^alpha:]]/", "")}"
+}
