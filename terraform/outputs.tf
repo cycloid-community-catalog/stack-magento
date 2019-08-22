@@ -18,6 +18,11 @@ output "cache_address" {
   description = "Address of the ElastiCache."
 }
 
+output "cache_cluster_id" {
+  value       = module.magento.cache_cluster_id
+  description = "Cluster Id of the ElastiCache."
+}
+
 output "rds_address" {
   value       = module.magento.rds_address
   description = "Address of the RDS database."
@@ -42,4 +47,3 @@ output "rds_database" {
   value       = module.magento.rds_database
   description = "Database name of the RDS database."
 }
-

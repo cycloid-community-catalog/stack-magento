@@ -36,7 +36,10 @@ output "rds_username" {
   value = aws_db_instance.magento.username
 }
 
-
 output "cache_address" {
   value = aws_elasticache_cluster.redis.cache_nodes[0].address
+}
+
+output "cache_cluster_id" {
+  value = local.elasticache_cluster_id
 }
