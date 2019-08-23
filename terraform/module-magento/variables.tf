@@ -62,7 +62,7 @@ variable "rds_disk_size" {
 }
 
 variable "rds_multiaz" {
-  default = true
+  default = false
 }
 
 variable "rds_password" {
