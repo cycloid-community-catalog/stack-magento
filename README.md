@@ -71,7 +71,7 @@ In order to run this task, couple elements are required within the infrastructur
 |`magento_git_branch`|Branch of the magento source code git repository.|`-`|`master`|`True`|
 |`magento_git_private_key`|SSH key pair to fetch magento source code git repository.|`-`|`((git_magento.ssh_key))`|`True`|
 |`magento_git_repository`|Url to the git repository containing Magento source code.|`-`|`git@github.com:MyUser/code-magento.git`|`True`|
-|`packer_ansible_version`|Ansible version used in packer and cycloid-toolkit ansible runner|`-`|`"2.4"`|`True`|
+|`packer_ansible_version`|Ansible version used in packer and cycloid-toolkit ansible runner|`-`|`"2.7"`|`True`|
 |`project`|Name of the project.|`-`|`($ project $)`|`True`|
 |`rds_password`|Password used for your rds. Set "empty" if you dont use databases|`-`|`((raw_rds_password))`|`False`|
 |`stack_git_branch`|Branch to use on the public stack Git repository|`-`|`master`|`True`|
