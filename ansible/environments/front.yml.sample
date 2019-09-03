@@ -19,7 +19,7 @@
 #. magento_admin_user: admin
 #+ Magento install option admin-user.
 
-#. magento_admin_password: 4Bigs3cr3t
+#. magento_admin_password (optional): <provided by the pipeline>
 #+ Magento install option admin-password.
 
 # In case you want to use vault to encrypt this password use the following command to generate the ansible vault var :

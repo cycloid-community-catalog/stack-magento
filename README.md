@@ -2,7 +2,7 @@
 
 Service catalog magento stack
 
-This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache. 
+This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache.
 
 
 # Architecture
@@ -53,26 +53,30 @@ In order to run this task, couple elements are required within the infrastructur
 |Name|Description|Type|Default|Required|
 |---|---|:---:|:---:|:---:|
 |`ansible_vault_password`|Password used by ansible vault to decrypt your vaulted files.|`-`|`((raw_ansible_vault_password))`|`True`|
-|`aws_access_key`|Amazon AWS access key for Terraform. see value format [Here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)|`-`|`((aws.access_key))`|`True`|
+|`aws_access_key`|Amazon AWS access key for Terraform. See value format [here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)|`-`|`((aws.access_key))`|`True`|
 |`aws_default_region`|Amazon AWS region to use for Terraform.|`-`|`eu-west-1`|`True`|
-|`aws_secret_key`|Amazon AWS secret key for Terraform. see value format [Here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)|`-`|`((aws.secret_key))`|`True`|
-|`bastion_private_key_pair`|bastion SSH private key used by ansible to connect on aws ec2 instances and the bastion itself.|`-`|`((ssh_bastion.ssh_key))`|`True`|
-|`bastion_url`|bastion url used by ansible to connect on aws ec2 instances.|`-`|`admin@bastion.cycloid.io`|`True`|
-|`config_ansible_path`|Path of Ansible files in the config git repository|`-`|`($ project $)/ansible`|`True`|
-|`config_git_private_key`|SSH key pair to fetch the config git repository.|`-`|`((git_config.ssh_key))`|`True`|
-|`config_git_repository`|Branch of the config git repository.|`-`|`master`|`True`|
+|`aws_secret_key`|Amazon AWS secret key for Terraform. See value format [here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)|`-`|`((aws.secret_key))`|`True`|
+|`bastion_private_key_pair`|bastion SSH private key used by ansible to connect on AWS EC2 instances and the bastion itself.|`-`|`((ssh_bastion.ssh_key))`|`True`|
+|`bastion_url`|bastion URL used by ansible to connect on AWS EC2 instances.|`-`|`user@bastion.server.com`|`True`|
+|`config_ansible_path`|Path of Ansible files in the config Git repository|`-`|`($ project $)/ansible`|`True`|
+|`config_git_branch`|Branch of the config Git repository.|`-`|`master`|`True`|
+|`config_git_private_key`|SSH key pair to fetch the config Git repository.|`-`|`((git_config.ssh_key))`|`True`|
+|`config_git_repository`|Git repository URL containing the config of the stack.|`-`|`git@github.com:MyUser/config-magento.git`|`True`|
 |`config_terraform_path`|Path of Terraform files in the config git repository|`-`|`($ project $)/terraform/($ environment $)`|`True`|
 |`customer`|Name of the Cycloid Organization, used as customer variable name.|`-`|`($ organization_canonical $)`|`True`|
 |`env`|Name of the project's environment.|`-`|`($ environment $)`|`True`|
-|`magento_deploy_bucket_name`|AWS S3 bucket name in which store the builded code of magento.|`-`|`($ project $)-deploy`|`True`|
-|`magento_deploy_bucket_object_path`|AWS S3 bucket path in which store the builded code of magento.|`-`|`/catalog-magento/($ environment $)/magento.tar.gz`|`True`|
+|`magento_admin_password`|Password used for magento admin user|`-`|`((raw_magento_admin_password))`|`False`|
+|`magento_deploy_bucket_name`|AWS S3 bucket name in which we will store your magento built code.|`-`|`($ project $)-deploy`|`True`|
+|`magento_deploy_bucket_object_path`|AWS S3 bucket path in which we will store your magento built code.|`-`|`/catalog-magento/($ environment $)/magento.tar.gz`|`True`|
 |`magento_git_branch`|Branch of the magento source code git repository.|`-`|`master`|`True`|
 |`magento_git_private_key`|SSH key pair to fetch magento source code git repository.|`-`|`((git_magento.ssh_key))`|`True`|
 |`magento_git_repository`|Url to the git repository containing Magento source code.|`-`|`git@github.com:MyUser/code-magento.git`|`True`|
+|`packer_ansible_version`|Ansible version used in packer and cycloid-toolkit ansible runner|`-`|`"2.7"`|`True`|
 |`project`|Name of the project.|`-`|`($ project $)`|`True`|
-|`stack_git_branch`|Branch to use on the public stack git repository|`-`|`master`|`True`|
+|`rds_password`|Password used for your rds. Set "empty" if you dont use databases|`-`|`((raw_rds_password))`|`False`|
+|`stack_git_branch`|Branch to use on the public stack Git repository|`-`|`master`|`True`|
 |`terraform_storage_bucket_name`|AWS S3 bucket name to store terraform remote state file.|`-`|`($ organization_canonical $)-terraform-remote-state`|`True`|
-|`terraform_storage_bucket_path`|AWS S3 bucket path to store terraform remote state file.|`-`|`($ project $)/($ environment $)`|`True`|
+
 
 ## Terraform
 
@@ -81,10 +85,11 @@ In order to run this task, couple elements are required within the infrastructur
 |Name|Description|Type|Default|Required|
 |---|---|:---:|:---:|:---:|
 |`bastion_sg_allow`|Amazon source security group ID which will be allowed to connect on Magento front port 22 (ssh).|`-`|``|`False`|
-|`cache_subnet`|AWS elasticache subnet name.|`-`|`Automatically generated from private_subnets_ids`|`False`|
+|`cache_subnet_group`|AWS elasticache subnet name.|`-`|`Automatically generated from private_subnets_ids`|`False`|
 |`elasticache_engine`|AWS elasticache binding port.|`-`|`6379`|`False`|
+|`elasticache_engine_version`|AWS elasticache engine version.|`-`|`"5.0.0"`|`False`|
 |`elasticache_nodes`|Number of AWS elasticache instances.|`-`|`1`|`False`|
-|`elasticache_parameter_group_name`|AWS elasticache parameter group name.|`-`|`default.redis3.2`|`False`|
+|`elasticache_parameter_group_name`|AWS elasticache parameter group name.|`-`|`default.redis5.0`|`False`|
 |`elasticache_type`|AWS elasticache instance type.|`-`|`cache.t2.micro`|`False`|
 |`front_count`|Number of Aws EC2 frontend server to create.|`-`|`1`|`False`|
 |`front_disk_size`|Disk size in Go of Aws EC2 frontend servers.|`-`|`60`|`False`|
@@ -101,9 +106,9 @@ In order to run this task, couple elements are required within the infrastructur
 |`rds_engine_version`|Version of the RDS engine.|`-`|`"5.7.16"`|`False`|
 |`rds_multiaz`|Enable multi AZ or not for the RDS database.|`bool`|`false`|`False`|
 |`rds_parameters`|RDS parameters to assign to the RDS database.|`-`|``|`False`|
-|`rds_password`|Password of the RDS database.|`-`|`ChangeMePls`|`False`|
-|`rds_subnet`|ID of the private DB subnet group to use for RDS database.|`-`|`Automatically generated from private_subnets_ids`|`False`|
-|`rds_type`|AWS Instance type of the RDS database.|`-`|`db.t2.small`|`False`|
+|`rds_password`|Password of the RDS database.|`-`|`var.rds_password to get it from the pipeline.`|`False`|
+|`rds_subnet_group`|ID of the private DB subnet group to use for RDS database.|`-`|`Automatically generated from private_subnets_ids`|`False`|
+|`rds_type`|AWS Instance type of the RDS database.|`-`|`db.t3.small`|`False`|
 |`rds_username`|User name of the RDS database.|`-`|`magento`|`False`|
 |`vpc_id`|Amazon VPC id on which create each components.|`-`|``|`True`|
 
@@ -125,12 +130,12 @@ In order to run this task, couple elements are required within the infrastructur
 
 |Name|Description|Type|Default|Required|
 |---|---|:---:|:---:|:---:|
-|`magento_admin_email`|Magento install option admin-email|`-`|`root@localhost.local`|`False`|
-|`magento_admin_firstname`|Magento install option admin-firstname|`-`|`admin`|`False`|
-|`magento_admin_lastname`|Magento install option admin-lastname|`-`|`admin`|`False`|
-|`magento_admin_password`|Magento install option admin-password|`-`|`4Bigs3cr3t`|`False`|
-|`magento_admin_user`|Magento install option admin-user|`-`|`admin`|`False`|
-|`magento_backend_frontname`|Magento frontName to use in env.php|`-`|`admin`|`False`|
+|`magento_admin_email`|Magento install option admin-email.|`-`|`root@localhost.local`|`False`|
+|`magento_admin_firstname`|Magento install option admin-firstname.|`-`|`admin`|`False`|
+|`magento_admin_lastname`|Magento install option admin-lastname.|`-`|`admin`|`False`|
+|`magento_admin_password`|Magento install option admin-password.|`-`|`<provided by the pipeline>`|`False`|
+|`magento_admin_user`|Magento install option admin-user.|`-`|`admin`|`False`|
+|`magento_backend_frontname`|Magento frontName to use in env.php.|`-`|`admin`|`False`|
 
 # Troubleshooting
 
