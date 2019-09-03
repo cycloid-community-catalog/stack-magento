@@ -106,7 +106,7 @@ In order to run this task, couple elements are required within the infrastructur
 |`rds_engine_version`|Version of the RDS engine.|`-`|`"5.7.16"`|`False`|
 |`rds_multiaz`|Enable multi AZ or not for the RDS database.|`bool`|`false`|`False`|
 |`rds_parameters`|RDS parameters to assign to the RDS database.|`-`|``|`False`|
-|`rds_password`|Password of the RDS database.|`-`|`"${var.rds_password}" to get it from the pipeline.`|`False`|
+|`rds_password`|Password of the RDS database.|`-`|`var.rds_password to get it from the pipeline.`|`False`|
 |`rds_subnet_group`|ID of the private DB subnet group to use for RDS database.|`-`|`Automatically generated from private_subnets_ids`|`False`|
 |`rds_type`|AWS Instance type of the RDS database.|`-`|`db.t3.small`|`False`|
 |`rds_username`|User name of the RDS database.|`-`|`magento`|`False`|

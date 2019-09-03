@@ -17,6 +17,7 @@ resource "aws_security_group" "redis" {
     Name         = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     role         = "redis"
     "cycloid.io" = "true"
   }
@@ -39,6 +40,7 @@ resource "aws_elasticache_cluster" "redis" {
     Name         = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     "cycloid.io" = "true"
   }
 }

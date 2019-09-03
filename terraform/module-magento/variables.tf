@@ -8,6 +8,10 @@ variable "bastion_sg_allow" {
 variable "env" {
 }
 
+variable "customer" {
+}
+
+
 variable "short_region" {
   type = map(string)
 

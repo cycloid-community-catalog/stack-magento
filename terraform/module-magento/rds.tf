@@ -21,6 +21,7 @@ resource "aws_security_group" "rds" {
     Name         = "${var.project}-rds-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     role         = "rds"
     "cycloid.io" = "true"
   }
@@ -57,6 +58,7 @@ resource "aws_db_instance" "magento" {
     role         = "rds"
     env          = var.env
     project      = var.project
+    client       = var.customer
     type         = "master"
     "cycloid.io" = "true"
   }

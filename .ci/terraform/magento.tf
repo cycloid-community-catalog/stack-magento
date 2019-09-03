@@ -2,8 +2,10 @@ module "magento" {
   #####################################
   # Do not modify the following lines #
   source = "./module-magento"
-  env     = "${var.env}"
-  project = "${var.project}"
+  env      = var.env
+  customer = var.customer
+  project  = var.project
+
   #####################################
 
   #. vpc_id (required):
@@ -22,9 +24,9 @@ module "magento" {
   #+ Public subnet IDs to use for the public ELB load balancer.
   public_subnets_ids = ["<public-subnets>"]
 
-  #. rds_password (optional): "${var.rds_password}" to get it from the pipeline.
+  #. rds_password (optional): var.rds_password to get it from the pipeline.
   #+ Password of the RDS database.
-  rds_password             = "${var.rds_password}"
+  rds_password             = var.rds_password
 
   #. keypair_name (optional): demo
   #+ SSH keypair name to use to deploy ec2 instances.

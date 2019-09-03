@@ -20,6 +20,7 @@ resource "aws_security_group" "front" {
     Name         = "${var.project}-front-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     role         = "front"
     "cycloid.io" = "true"
   }
@@ -75,6 +76,7 @@ resource "aws_instance" "front" {
     Name         = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     role         = "front"
   }
 
@@ -83,6 +85,7 @@ resource "aws_instance" "front" {
     Name         = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
     role         = "front"
   }
 }
@@ -124,6 +127,7 @@ resource "aws_security_group" "elb-front" {
     Name         = "${var.project}-elb-front-${var.env}"
     env          = var.env
     project      = var.project
+    client       = var.customer
   }
 }
 
@@ -172,6 +176,7 @@ resource "aws_elb" "front" {
     role         = "front"
     env          = var.env
     project      = var.project
+    client       = var.customer
   }
 }
 
