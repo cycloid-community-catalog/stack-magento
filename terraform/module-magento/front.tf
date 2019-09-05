@@ -16,14 +16,10 @@ resource "aws_security_group" "front" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name         = "${var.project}-front-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    role         = "front"
-    "cycloid.io" = "true"
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-front-${var.env}"
+    role = "front"
+  })
 }
 
 resource "aws_security_group_rule" "elb_to_front_http" {
@@ -71,23 +67,16 @@ resource "aws_instance" "front" {
     delete_on_termination = true
   }
 
-  volume_tags = {
-    "cycloid.io" = "true"
-    Name         = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    role         = "front"
-  }
 
-  tags = {
-    "cycloid.io" = "true"
-    Name         = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    role         = "front"
-  }
+  volume_tags = merge(local.merged_tags, {
+    Name = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
+    role = "front"
+  })
+
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
+    role = "front"
+  })
 }
 
 ###
@@ -122,13 +111,11 @@ resource "aws_security_group" "elb-front" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    "cycloid.io" = "true"
-    Name         = "${var.project}-elb-front-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-elb-front-${var.env}"
+    role = "front"
+  })
+
 }
 
 ###
@@ -170,14 +157,11 @@ resource "aws_elb" "front" {
   cross_zone_load_balancing = true
   idle_timeout              = 120
 
-  tags = {
-    "cycloid.io" = "true"
-    Name         = "${var.project}-front-${var.short_region[var.aws_region]}-${var.env}"
-    role         = "front"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-front-${var.short_region[var.aws_region]}-${var.env}"
+    role = "front"
+  })
+
 }
 
 ###
