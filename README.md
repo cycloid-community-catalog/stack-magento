@@ -91,6 +91,7 @@ In order to run this task, couple elements are required within the infrastructur
 |`elasticache_nodes`|Number of AWS elasticache instances.|`-`|`1`|`False`|
 |`elasticache_parameter_group_name`|AWS elasticache parameter group name.|`-`|`default.redis5.0`|`False`|
 |`elasticache_type`|AWS elasticache instance type.|`-`|`cache.t2.micro`|`False`|
+|`extra_tags`|Dict of extra tags to add on aws resources. format { "foo" = "bar" }.|`-`|`{}`|`False`|
 |`front_count`|Number of Aws EC2 frontend server to create.|`-`|`1`|`False`|
 |`front_disk_size`|Disk size in Go of Aws EC2 frontend servers.|`-`|`60`|`False`|
 |`front_ebs_optimized`|Whether the Instance is EBS optimized or not, related to the instance type you choose.|`bool`|`false`|`False`|
@@ -111,7 +112,6 @@ In order to run this task, couple elements are required within the infrastructur
 |`rds_type`|AWS Instance type of the RDS database.|`-`|`db.t3.small`|`False`|
 |`rds_username`|User name of the RDS database.|`-`|`magento`|`False`|
 |`vpc_id`|Amazon VPC id on which create each components.|`-`|``|`True`|
-
 
 **Outputs**
 

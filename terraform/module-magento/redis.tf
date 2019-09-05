@@ -13,14 +13,10 @@ resource "aws_security_group" "redis" {
     ]
   }
 
-  tags = {
-    Name         = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    role         = "redis"
-    "cycloid.io" = "true"
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
+    role = "redis"
+  })
 }
 
 resource "aws_elasticache_cluster" "redis" {
@@ -36,13 +32,10 @@ resource "aws_elasticache_cluster" "redis" {
   apply_immediately    = true
   maintenance_window   = "tue:06:00-tue:07:00"
 
-  tags = {
-    Name         = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    "cycloid.io" = "true"
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-${var.elasticache_engine}-${var.short_region[var.aws_region]}-${var.env}"
+    role = "redis"
+  })
 }
 
 resource "aws_elasticache_subnet_group" "cache-subnet" {

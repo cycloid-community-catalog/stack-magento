@@ -36,6 +36,8 @@ module "magento" {
   #+ SSH keypair name to use to deploy ec2 instances.
   # keypair_name = "demo"
 
+  #. extra_tags (optional): {}
+  #+ Dict of extra tags to add on aws resources. format { "foo" = "bar" }.
 
   #. rds_database (optional): magento
   #+ Name of the RDS database.

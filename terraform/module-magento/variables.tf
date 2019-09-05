@@ -39,6 +39,20 @@ variable "keypair_name" {
   default = "demo"
 }
 
+variable "extra_tags" {
+  default = {}
+}
+
+locals {
+  standard_tags = {
+    "cycloid.io" = "true"
+    env          = var.env
+    project      = var.project
+    client       = var.customer
+  }
+  merged_tags = merge(local.standard_tags, var.extra_tags)
+}
+
 variable "private_subnets_ids" {
   type    = list(string)
   default = [""]

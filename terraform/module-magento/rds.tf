@@ -17,14 +17,10 @@ resource "aws_security_group" "rds" {
     security_groups = [aws_security_group.front.id]
   }
 
-  tags = {
-    Name         = "${var.project}-rds-${var.env}"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    role         = "rds"
-    "cycloid.io" = "true"
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-rds-${var.env}"
+    role = "rds"
+  })
 }
 
 resource "aws_db_instance" "magento" {
@@ -53,15 +49,10 @@ resource "aws_db_instance" "magento" {
 
   vpc_security_group_ids = [aws_security_group.rds.id]
 
-  tags = {
-    Name         = "${var.project}-rds-${var.short_region[var.aws_region]}-${var.env}"
-    role         = "rds"
-    env          = var.env
-    project      = var.project
-    client       = var.customer
-    type         = "master"
-    "cycloid.io" = "true"
-  }
+  tags = merge(local.merged_tags, {
+    Name = "${var.project}-rds-${var.short_region[var.aws_region]}-${var.env}"
+    role = "rds"
+  })
 }
 
 resource "aws_db_subnet_group" "rds-subnet" {
