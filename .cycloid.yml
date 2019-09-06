@@ -10,12 +10,14 @@ type: 'stack'
 technologies:
   - technology: Debian
     version: 9.x
+  - technology: mysql
+    version: 5.x
   - technology: Nginx
     version: 1.1x
   - technology: Php
     version: 7.2
   - technology: Redis
-    version: 3.4
+    version: 5.x
   - technology: Magento
     version: 2.x
 config:
