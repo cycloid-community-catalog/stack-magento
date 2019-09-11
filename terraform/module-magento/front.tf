@@ -169,8 +169,8 @@ resource "aws_elb" "front" {
 # Cloudwatch Alarms
 
 ###
-
 resource "aws_cloudwatch_metric_alarm" "recover-front" {
+  depends_on          = [aws_instance.front]
   alarm_actions       = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
   alarm_description   = "Recover the instance"
   alarm_name          = "cycloid-engine_recover-${var.project}-front${count.index}-${var.env}"
