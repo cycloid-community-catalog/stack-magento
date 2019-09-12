@@ -21,7 +21,7 @@ aws_default_region: eu-west-1
 terraform_storage_bucket_name: ($ organization_canonical $)-terraform-remote-state
 
 #. rds_password (optional): ((raw_rds_password))
-#+ Password used for your rds. Set "empty" if you dont use databases
+#+ Password used for your rds.
 rds_password: ((raw_rds_password))
 
 
