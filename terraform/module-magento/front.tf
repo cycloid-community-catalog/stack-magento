@@ -169,13 +169,18 @@ resource "aws_elb" "front" {
 # Cloudwatch Alarms
 
 ###
+
+variable "create_metric_alarm" {
+  default = true
+}
+
 resource "aws_cloudwatch_metric_alarm" "recover-front" {
+  count = var.create_metric_alarm ? var.front_count : 0
   depends_on          = [aws_instance.front]
   alarm_actions       = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
   alarm_description   = "Recover the instance"
   alarm_name          = "cycloid-engine_recover-${var.project}-front${count.index}-${var.env}"
   comparison_operator = "GreaterThanThreshold"
-  count               = var.front_count
 
   dimensions = {
     InstanceId = element(aws_instance.front.*.id, count.index)
