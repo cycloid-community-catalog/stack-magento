@@ -1,6 +1,4 @@
-variable "aws_region" {
-  default = "eu-west-1"
-}
+data "aws_region" "current" {}
 
 variable "bastion_sg_allow" {
 }

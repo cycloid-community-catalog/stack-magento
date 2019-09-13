@@ -41,7 +41,7 @@ resource "aws_db_instance" "magento" {
   backup_window             = "02:00-04:00"
   backup_retention_period   = var.rds_backup_retention
   copy_tags_to_snapshot     = true
-  final_snapshot_identifier = "${var.project}-rds-${var.short_region[var.aws_region]}-${var.env}"
+  final_snapshot_identifier = "${var.project}-rds-${var.short_region[data.aws_region.current.name]}-${var.env}"
   skip_final_snapshot       = var.rds_skip_final_snapshot
 
   parameter_group_name = var.rds_parameters
@@ -50,7 +50,7 @@ resource "aws_db_instance" "magento" {
   vpc_security_group_ids = [aws_security_group.rds.id]
 
   tags = merge(local.merged_tags, {
-    Name = "${var.project}-rds-${var.short_region[var.aws_region]}-${var.env}"
+    Name = "${var.project}-rds-${var.short_region[data.aws_region.current.name]}-${var.env}"
     role = "rds"
   })
 }

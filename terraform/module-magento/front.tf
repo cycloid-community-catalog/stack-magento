@@ -69,12 +69,12 @@ resource "aws_instance" "front" {
 
 
   volume_tags = merge(local.merged_tags, {
-    Name = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
+    Name = "${var.project}-front${count.index}-${var.short_region[data.aws_region.current.name]}-${var.env}"
     role = "front"
   })
 
   tags = merge(local.merged_tags, {
-    Name = "${var.project}-front${count.index}-${var.short_region[var.aws_region]}-${var.env}"
+    Name = "${var.project}-front${count.index}-${var.short_region[data.aws_region.current.name]}-${var.env}"
     role = "front"
   })
 }
@@ -158,7 +158,7 @@ resource "aws_elb" "front" {
   idle_timeout              = 120
 
   tags = merge(local.merged_tags, {
-    Name = "${var.project}-front-${var.short_region[var.aws_region]}-${var.env}"
+    Name = "${var.project}-front-${var.short_region[data.aws_region.current.name]}-${var.env}"
     role = "front"
   })
 
@@ -175,9 +175,9 @@ variable "create_metric_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "recover-front" {
-  count = var.create_metric_alarm ? var.front_count : 0
+  count               = var.create_metric_alarm ? var.front_count : 0
   depends_on          = [aws_instance.front]
-  alarm_actions       = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
+  alarm_actions       = ["arn:aws:automate:${data.aws_region.current.name}:ec2:recover"]
   alarm_description   = "Recover the instance"
   alarm_name          = "cycloid-engine_recover-${var.project}-front${count.index}-${var.env}"
   comparison_operator = "GreaterThanThreshold"
