@@ -9,25 +9,6 @@ variable "env" {
 variable "customer" {
 }
 
-
-variable "short_region" {
-  type = map(string)
-
-  default = {
-    ap-northeast-1 = "ap-no1"
-    ap-northeast-2 = "ap-no2"
-    ap-southeast-1 = "ap-so1"
-    ap-southeast-2 = "ap-so2"
-    eu-central-1   = "eu-ce1"
-    eu-west-1      = "eu-we1"
-    eu-west-3      = "eu-we3"
-    sa-east-1      = "sa-ea1"
-    us-east-1      = "us-ea1"
-    us-west-1      = "us-we1"
-    us-west-2      = "us-we2"
-  }
-}
-
 variable "zones" {
   type    = list(string)
   default = []

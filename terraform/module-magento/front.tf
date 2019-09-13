@@ -69,12 +69,12 @@ resource "aws_instance" "front" {
 
 
   volume_tags = merge(local.merged_tags, {
-    Name = "${var.project}-front${count.index}-${var.short_region[data.aws_region.current.name]}-${var.env}"
+    Name = "${var.project}-front${count.index}-${var.env}"
     role = "front"
   })
 
   tags = merge(local.merged_tags, {
-    Name = "${var.project}-front${count.index}-${var.short_region[data.aws_region.current.name]}-${var.env}"
+    Name = "${var.project}-front${count.index}-${var.env}"
     role = "front"
   })
 }
@@ -158,7 +158,7 @@ resource "aws_elb" "front" {
   idle_timeout              = 120
 
   tags = merge(local.merged_tags, {
-    Name = "${var.project}-front-${var.short_region[data.aws_region.current.name]}-${var.env}"
+    Name = "${var.project}-front-${var.env}"
     role = "front"
   })
 
