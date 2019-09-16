@@ -14,6 +14,14 @@ variable "zones" {
   default = []
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+locals {
+  aws_availability_zones = length(var.zones) > 0 ? var.zones : data.aws_availability_zones.available.names
+}
+
 variable "keypair_name" {
   default = "demo"
 }
