@@ -40,7 +40,6 @@ groups:
   - app-deploy-front
   - terraform-plan
   - terraform-apply
-  - unittests
   - functional-tests
 - name: destroy
   jobs:
@@ -273,34 +272,6 @@ jobs:
           acl: private
           file: release/magento-release.tar.gz
 
-  - name: unittests
-    max_in_flight: 1
-    build_logs_to_retain: 10
-    plan:
-    - do:
-      - get: s3_magento-release
-        trigger: true
-        passed: [build]
-      - get: git_magento-code
-        passed: [build]
-        trigger: false
-
-      - task: run
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: cycloid/busybox
-              tag: latest
-          run:
-            path: /bin/bash
-            args:
-            - -xec
-            - |
-              DIR=${PWD}
-              echo "Dummy tests OK"
-
   - name: full-deploy-front
     build_logs_to_retain: 10
     plan:
@@ -318,10 +289,8 @@ jobs:
 
       - get: s3_magento-release
         trigger: false
-        passed: [unittests]
 
       - get: git_magento-code
-        passed: [unittests]
         trigger: false
 
       - task: merge-stack-and-config
@@ -383,10 +352,8 @@ jobs:
 
       - get: s3_magento-release
         trigger: true
-        passed: [unittests]
       - get: git_magento-code
         trigger: false
-        passed: [unittests]
 
       - task: merge-stack-and-config
         config:
