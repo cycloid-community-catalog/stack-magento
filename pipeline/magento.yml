@@ -288,6 +288,8 @@ jobs:
         trigger: true
 
       - get: s3_magento-release
+        passed:
+        - build
         trigger: false
 
       - get: git_magento-code
@@ -351,6 +353,8 @@ jobs:
           - full-deploy-front
 
       - get: s3_magento-release
+        passed:
+        - build
         trigger: true
       - get: git_magento-code
         trigger: false
