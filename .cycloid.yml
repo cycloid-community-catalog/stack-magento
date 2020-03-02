@@ -1,6 +1,7 @@
 # Configuration of the CI pipeline
 name: 'Magento'
 canonical: 'stack-magento'
+status: 'public'
 description: 'This stack will deploy a Magento on X Amazon EC2 instances behind an ELB load balancer, using RDS database and ElasticCache.'
 keywords:
   - 'magento'
