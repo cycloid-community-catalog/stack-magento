@@ -20,18 +20,18 @@ aws_default_region: eu-west-1
 #+ AWS S3 bucket name to store terraform remote state file.
 terraform_storage_bucket_name: ($ organization_canonical $)-terraform-remote-state
 
-#. rds_password (required): ((raw_rds_password))
+#. rds_password (required): ((custom_rds_password))
 #+ Password used for your rds.
-rds_password: ((raw_rds_password))
+rds_password: ((custom_rds_password))
 
 
 #
 # Ansible
 #
 
-#. magento_admin_password (optional): ((raw_magento_admin_password))
+#. magento_admin_password (optional): ((custom_magento_admin_password))
 #+ Password used for magento admin user
-magento_admin_password: ((raw_magento_admin_password))
+magento_admin_password: ((custom_magento_admin_password))
 
 #. magento_deploy_bucket_name (required): ($ project $)-deploy
 #+ AWS S3 bucket name in which we will store your magento built code.
@@ -41,9 +41,9 @@ magento_deploy_bucket_name: ($ project $)-deploy
 #+ AWS S3 bucket path in which we will store your magento built code.
 magento_deploy_bucket_object_path: /catalog-magento/($ environment $)/magento.tar.gz
 
-#. ansible_vault_password (required): ((raw_ansible_vault_password))
+#. ansible_vault_password (required): ((custom_ansible_vault_password))
 #+ Password used by ansible vault to decrypt your vaulted files.
-ansible_vault_password: ((raw_ansible_vault_password))
+ansible_vault_password: ((custom_ansible_vault_password))
 
 #. bastion_url (required): user@bastion.server.com
 #+ bastion URL used by ansible to connect on AWS EC2 instances.
@@ -65,9 +65,9 @@ config_git_repository: git@github.com:MyUser/config-magento.git
 #+ Branch of the config Git repository.
 config_git_branch: master
 
-#. config_git_private_key (required): ((git_config.ssh_key))
+#. config_git_private_key (required): ((ssh_config.ssh_key))
 #+ SSH key pair to fetch the config Git repository.
-config_git_private_key: ((git_config.ssh_key))
+config_git_private_key: ((ssh_config.ssh_key))
 
 #. magento_git_repository (required): git@github.com:MyUser/code-magento.git
 #+ Url to the git repository containing Magento source code.
@@ -77,9 +77,9 @@ magento_git_repository: git@github.com:MyUser/code-magento.git
 #+ Branch of the magento source code git repository.
 magento_git_branch: master
 
-#. magento_git_private_key (required): ((git_magento.ssh_key))
+#. magento_git_private_key (required): ((ssh_magento.ssh_key))
 #+ SSH key pair to fetch magento source code git repository.
-magento_git_private_key:  ((git_magento.ssh_key))
+magento_git_private_key:  ((ssh_magento.ssh_key))
 
 #
 # Default variables that shouldn't be changed except if needed
